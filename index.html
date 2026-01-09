@@ -157,9 +157,9 @@
 
     <!-- Works Filter Bar -->
     <div id="work" class="sticky top-16 z-30 bg-[#FDFDFD]/90 backdrop-blur-sm border-b border-zinc-100 mb-12 px-6">
-        <div class="max-w-7xl mx-auto py-6 flex justify-between items-center">
-            <h2 class="text-xs font-black uppercase tracking-[0.3em]">Selected Works</h2>
-            <div class="flex gap-6 overflow-x-auto no-scrollbar" id="filter-buttons">
+        <div class="max-w-7xl mx-auto py-6 flex items-center gap-8">
+            <h2 class="text-xs font-black uppercase tracking-[0.3em] shrink-0">Selected Works</h2>
+            <div class="flex gap-8 overflow-x-auto no-scrollbar" id="filter-buttons">
                 <!-- Filter buttons will be rendered here -->
             </div>
         </div>
@@ -419,7 +419,7 @@
         function renderFilterButton(cat, isActive) {
             const activeClass = isActive ? 'text-red-600 border-b-2 border-red-600 pb-1' : 'text-zinc-400 hover:text-zinc-900';
             return `
-                <button onclick="setActiveCategory('${cat}')" class="whitespace-nowrap text-[10px] font-bold uppercase tracking-widest transition-all ${activeClass}">
+                <button onclick="setActiveCategory('${cat}')" class="whitespace-nowrap text-xs font-black uppercase tracking-[0.3em] transition-all ${activeClass}">
                     ${cat}
                 </button>
             `;
