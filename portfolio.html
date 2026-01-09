@@ -1,0 +1,1562 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>王郁平 | 視覺設計師作品集</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/lucide-react@latest/dist/umd/lucide-react.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* 3D Flip Book Styles */
+        .perspective-1500 { perspective: 1500px; }
+        .preserve-3d { transform-style: preserve-3d; }
+        .backface-hidden { backface-visibility: hidden; }
+        .rotate-y-180 { transform: rotateY(-180deg); }
+        .origin-left { transform-origin: left center; }
+
+        /* Animations */
+        @keyframes breathe {
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.1); }
+        }
+        .animate-breathe { animation: breathe 2s ease-in-out infinite; }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .animate-slide-in { animation: slideIn 0.3s ease-out; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in { animation: fadeIn 0.3s ease-out; }
+
+        /* Page flip transition */
+        .page-flip {
+            transition: transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1);
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-[#FDFDFD]">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef, useCallback } = React;
+        const {
+            Settings, X, ChevronLeft, ChevronRight, Heart, MessageCircle,
+            Send, Bookmark, MoreHorizontal, MapPin, Mail, Instagram,
+            Briefcase, GraduationCap, Sparkles, Image, FileText, Plus,
+            Trash2, Save, Upload, Download, ExternalLink, Eye, Grip,
+            BookOpen, Layout, Layers, Monitor
+        } = lucideReact;
+
+        // ============ 安全轉換函式 ============
+        const safeStr = (val) => {
+            if (val === null || val === undefined) return '';
+            if (typeof val === 'string') return val;
+            if (typeof val === 'number') return String(val);
+            if (Array.isArray(val)) return val.map(safeStr).join(', ');
+            if (typeof val === 'object') return JSON.stringify(val);
+            return String(val);
+        };
+
+        // ============ 預設資料 ============
+        const DEFAULT_DATA = {
+            profile: {
+                name: "王郁平",
+                nameEn: "YuPing Wang",
+                title: "Graphic Designer / Visual Artist",
+                location: "Taipei, Taiwan",
+                email: "phinainaina@gmail.com",
+                instagram: "https://instagram.com",
+                intro: "「從品牌的靈魂雕琢到大型商業專刊的精密排版，我致力於透過視覺語言與 AI 協作，為客戶創造最具前瞻性的商業價值。」"
+            },
+            experience: [
+                { id: 'exp1', period: "2024.07 – 至今", role: "平面視覺設計師", company: "來電司康 ENSCON", desc: "專注於品牌核心視覺發展與多維度設計執行。" },
+                { id: 'exp2', period: "2022.02 – 2024.06", role: "自由設計師 (SOHO)", company: "獨立承接 / Freelance", desc: "負責跨產業品牌設計，完成全流程視覺規劃。" },
+                { id: 'exp3', period: "2020.12 – 2022.02", role: "電商品牌設計專員", company: "十方力有限公司", desc: "主導官網視覺與包裝設計，串聯行銷與營運需求。" },
+                { id: 'exp4', period: "2017.09 – 2019.06", role: "美工宣傳專員", company: "太平洋崇光百貨 (SOGO)", desc: "執行天母館大型檔期專刊排版。" }
+            ],
+            education: [
+                { id: 'edu1', period: "2018 - 2022", role: "視覺傳達設計系", company: "明志科技大學" },
+                { id: 'edu2', period: "2015 - 2018", role: "廣告設計科", company: "臺北市立士林高級商業職業學校" }
+            ],
+            skills: [
+                { id: 'sk1', title: "品牌視覺識別 (VI)", detail: "標誌設計、色彩規範、品牌應用延伸。" },
+                { id: 'sk2', title: "電商視覺設計", detail: "官網 Banner、社群圖文、素材規劃。" },
+                { id: 'sk3', title: "平面排版印刷", detail: "百貨專刊設計、大型輸出、印刷管控。" },
+                { id: 'sk4', title: "影像企劃與剪輯", detail: "產品攝影、短影音剪輯、動態視覺。" },
+                { id: 'sk5', title: "AI 數位工作流", detail: "提示詞工程、AI 生成影像與音效。" }
+            ],
+            softwareTools: [
+                { id: 'tool1', name: "Photoshop", icon: "https://upload.wikimedia.org/wikipedia/commons/a/af/Adobe_Photoshop_CC_icon.svg" },
+                { id: 'tool2', name: "Illustrator", icon: "https://upload.wikimedia.org/wikipedia/commons/f/fb/Adobe_Illustrator_CC_icon.svg" },
+                { id: 'tool3', name: "InDesign", icon: "https://upload.wikimedia.org/wikipedia/commons/4/48/Adobe_InDesign_CC_icon.svg" },
+                { id: 'tool4', name: "Premiere Pro", icon: "https://upload.wikimedia.org/wikipedia/commons/4/40/Adobe_Premiere_Pro_CC_icon.svg" }
+            ],
+            projects: [
+                {
+                    id: 1,
+                    title: "2025 海報系列",
+                    subtitle: "平面印刷實驗",
+                    category: "平面設計",
+                    displayMode: "stack",
+                    tags: ["海報", "印刷"],
+                    image: "https://images.unsplash.com/photo-1558591710-4b4a1ae0f04d?q=80&w=800",
+                    gallery: [
+                        "https://images.unsplash.com/photo-1558591710-4b4a1ae0f04d?q=80&w=800",
+                        "https://images.unsplash.com/photo-1561070791-2526d30994b5?q=80&w=800",
+                        "https://images.unsplash.com/photo-1541701494587-cb58502866ab?q=80&w=800"
+                    ]
+                },
+                {
+                    id: 2,
+                    title: "ENSCON 品牌識別",
+                    subtitle: "社群視覺系統",
+                    category: "品牌設計",
+                    displayMode: "instagram",
+                    tags: ["品牌", "社群"],
+                    image: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=800",
+                    gallery: [
+                        "https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=800",
+                        "https://images.unsplash.com/photo-1611162616305-c69b3fa7fbe0?q=80&w=800",
+                        "https://images.unsplash.com/photo-1611162618071-b39a2ec055fb?q=80&w=800",
+                        "https://images.unsplash.com/photo-1611605698335-8b1569810432?q=80&w=800"
+                    ]
+                },
+                {
+                    id: 3,
+                    title: "天母 SOGO 專刊",
+                    subtitle: "2024 化妝品特輯",
+                    category: "排版設計",
+                    displayMode: "flipbook",
+                    tags: ["百貨", "專刊"],
+                    image: "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?q=80&w=800",
+                    gallery: [
+                        "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?q=80&w=800",
+                        "https://images.unsplash.com/photo-1586717791821-3f44a563eb4c?q=80&w=800",
+                        "https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=800",
+                        "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?q=80&w=800",
+                        "https://images.unsplash.com/photo-1571781926291-c477ebfd024b?q=80&w=800",
+                        "https://images.unsplash.com/photo-1583241475880-083f84372725?q=80&w=800"
+                    ]
+                },
+                {
+                    id: 4,
+                    title: "鴻海科技集團",
+                    subtitle: "供應商責任報告書",
+                    category: "企業專案",
+                    displayMode: "pdf",
+                    tags: ["ESG", "報告書"],
+                    image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=800",
+                    pdfUrl: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
+                }
+            ]
+        };
+
+        // ============ 資料存取 ============
+        const loadData = () => {
+            try {
+                const saved = localStorage.getItem('portfolio_react_data');
+                if (saved) return JSON.parse(saved);
+            } catch (e) {
+                console.error('Load data error:', e);
+            }
+            return DEFAULT_DATA;
+        };
+
+        const saveData = (data) => {
+            try {
+                localStorage.setItem('portfolio_react_data', JSON.stringify(data));
+                return true;
+            } catch (e) {
+                console.error('Save data error:', e);
+                return false;
+            }
+        };
+
+        // ============ Toast 元件 ============
+        const Toast = ({ message, type, onClose }) => {
+            useEffect(() => {
+                const timer = setTimeout(onClose, 3000);
+                return () => clearTimeout(timer);
+            }, [onClose]);
+
+            const bgColor = type === 'success' ? 'bg-green-600' : type === 'error' ? 'bg-red-600' : 'bg-zinc-800';
+
+            return (
+                <div className={`animate-slide-in px-4 py-3 rounded-lg text-white text-sm font-medium shadow-lg ${bgColor}`}>
+                    {safeStr(message)}
+                </div>
+            );
+        };
+
+        // ============ 3D 翻書元件 ============
+        const FlipBookViewer = ({ images = [], onClose }) => {
+            const [currentSpread, setCurrentSpread] = useState(0);
+            const [isFlipping, setIsFlipping] = useState(false);
+            const [flipDirection, setFlipDirection] = useState(null);
+
+            const totalSpreads = Math.ceil(images.length / 2);
+
+            const nextPage = () => {
+                if (currentSpread < totalSpreads - 1 && !isFlipping) {
+                    setIsFlipping(true);
+                    setFlipDirection('next');
+                    setTimeout(() => {
+                        setCurrentSpread(prev => prev + 1);
+                        setIsFlipping(false);
+                        setFlipDirection(null);
+                    }, 600);
+                }
+            };
+
+            const prevPage = () => {
+                if (currentSpread > 0 && !isFlipping) {
+                    setIsFlipping(true);
+                    setFlipDirection('prev');
+                    setTimeout(() => {
+                        setCurrentSpread(prev => prev - 1);
+                        setIsFlipping(false);
+                        setFlipDirection(null);
+                    }, 600);
+                }
+            };
+
+            const leftPageIndex = currentSpread * 2;
+            const rightPageIndex = currentSpread * 2 + 1;
+
+            return (
+                <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4">
+                    <button onClick={onClose} className="absolute top-6 right-6 p-2 bg-white text-zinc-900 rounded-full hover:bg-red-600 hover:text-white transition-all z-50">
+                        <X size={24} />
+                    </button>
+
+                    <div className="w-full max-w-5xl">
+                        <div className="perspective-1500 relative">
+                            {/* Book Container */}
+                            <div className="flex justify-center items-center gap-0">
+                                {/* Left Page */}
+                                <div className="relative w-[45%] aspect-[3/4] bg-white shadow-2xl overflow-hidden">
+                                    <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-black/10 to-transparent z-10"></div>
+                                    {images[leftPageIndex] && (
+                                        <img
+                                            src={images[leftPageIndex]}
+                                            alt={`Page ${leftPageIndex + 1}`}
+                                            className="w-full h-full object-cover"
+                                        />
+                                    )}
+                                </div>
+
+                                {/* Spine */}
+                                <div className="w-4 h-full bg-gradient-to-r from-zinc-300 via-zinc-200 to-zinc-300 shadow-inner"></div>
+
+                                {/* Right Page */}
+                                <div className="relative w-[45%] aspect-[3/4] bg-white shadow-2xl overflow-hidden">
+                                    <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-black/10 to-transparent z-10"></div>
+                                    {images[rightPageIndex] && (
+                                        <img
+                                            src={images[rightPageIndex]}
+                                            alt={`Page ${rightPageIndex + 1}`}
+                                            className="w-full h-full object-cover"
+                                        />
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Flip Animation Overlay */}
+                            {isFlipping && (
+                                <div className="absolute inset-0 flex justify-center items-center pointer-events-none">
+                                    <div
+                                        className={`absolute w-[45%] aspect-[3/4] bg-white shadow-2xl preserve-3d origin-left page-flip ${flipDirection === 'next' ? 'rotate-y-180' : ''}`}
+                                        style={{
+                                            left: '50%',
+                                            transform: flipDirection === 'next' ? 'rotateY(-180deg)' : 'rotateY(0deg)'
+                                        }}
+                                    >
+                                        <div className="absolute inset-0 backface-hidden">
+                                            {images[rightPageIndex] && (
+                                                <img src={images[rightPageIndex]} className="w-full h-full object-cover" alt="" />
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Navigation */}
+                        <div className="flex justify-center items-center gap-8 mt-8">
+                            <button
+                                onClick={prevPage}
+                                disabled={currentSpread === 0 || isFlipping}
+                                className="p-3 bg-white/10 text-white rounded-full hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                            >
+                                <ChevronLeft size={24} />
+                            </button>
+                            <span className="text-white/60 text-sm font-medium">
+                                {currentSpread + 1} / {totalSpreads}
+                            </span>
+                            <button
+                                onClick={nextPage}
+                                disabled={currentSpread >= totalSpreads - 1 || isFlipping}
+                                className="p-3 bg-white/10 text-white rounded-full hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                            >
+                                <ChevronRight size={24} />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // ============ IG 輪播元件 ============
+        const InstagramCarousel = ({ images = [], profile, onClose }) => {
+            const [currentIndex, setCurrentIndex] = useState(0);
+            const [isLiked, setIsLiked] = useState(false);
+            const [isSaved, setIsSaved] = useState(false);
+
+            const nextSlide = () => {
+                setCurrentIndex(prev => (prev + 1) % images.length);
+            };
+
+            const prevSlide = () => {
+                setCurrentIndex(prev => (prev - 1 + images.length) % images.length);
+            };
+
+            return (
+                <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4">
+                    <button onClick={onClose} className="absolute top-6 right-6 p-2 bg-white text-zinc-900 rounded-full hover:bg-red-600 hover:text-white transition-all z-50">
+                        <X size={24} />
+                    </button>
+
+                    <div className="w-full max-w-md bg-white rounded-xl overflow-hidden shadow-2xl">
+                        {/* Header */}
+                        <div className="flex items-center justify-between p-3 border-b border-zinc-100">
+                            <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-600 p-0.5">
+                                    <div className="w-full h-full bg-white rounded-full flex items-center justify-center text-xs font-bold text-zinc-900">
+                                        {safeStr(profile?.name?.[0]) || 'D'}
+                                    </div>
+                                </div>
+                                <div>
+                                    <p className="text-sm font-semibold text-zinc-900">{safeStr(profile?.nameEn) || 'designer'}</p>
+                                    <p className="text-xs text-zinc-500 flex items-center gap-1">
+                                        <MapPin size={10} /> {safeStr(profile?.location) || 'Taiwan'}
+                                    </p>
+                                </div>
+                            </div>
+                            <button className="p-1 text-zinc-600 hover:text-zinc-900">
+                                <MoreHorizontal size={20} />
+                            </button>
+                        </div>
+
+                        {/* Image Carousel */}
+                        <div className="relative aspect-square bg-zinc-100">
+                            <img
+                                src={images[currentIndex]}
+                                alt={`Slide ${currentIndex + 1}`}
+                                className="w-full h-full object-cover"
+                            />
+
+                            {/* Navigation Arrows */}
+                            {images.length > 1 && (
+                                <>
+                                    <button
+                                        onClick={prevSlide}
+                                        className="absolute left-2 top-1/2 -translate-y-1/2 p-1.5 bg-white/90 rounded-full shadow-lg hover:bg-white transition-all"
+                                    >
+                                        <ChevronLeft size={16} />
+                                    </button>
+                                    <button
+                                        onClick={nextSlide}
+                                        className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 bg-white/90 rounded-full shadow-lg hover:bg-white transition-all"
+                                    >
+                                        <ChevronRight size={16} />
+                                    </button>
+                                </>
+                            )}
+
+                            {/* Dots Indicator */}
+                            {images.length > 1 && (
+                                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5">
+                                    {images.map((_, idx) => (
+                                        <button
+                                            key={idx}
+                                            onClick={() => setCurrentIndex(idx)}
+                                            className={`rounded-full transition-all ${
+                                                idx === currentIndex
+                                                    ? 'w-2 h-2 bg-red-600 scale-125'
+                                                    : 'w-1.5 h-1.5 bg-white/60 hover:bg-white'
+                                            }`}
+                                        />
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Actions */}
+                        <div className="p-3">
+                            <div className="flex items-center justify-between mb-3">
+                                <div className="flex items-center gap-4">
+                                    <button
+                                        onClick={() => setIsLiked(!isLiked)}
+                                        className={`transition-all hover:scale-110 ${isLiked ? 'text-red-500' : 'text-zinc-900'}`}
+                                    >
+                                        <Heart size={24} fill={isLiked ? 'currentColor' : 'none'} />
+                                    </button>
+                                    <button className="text-zinc-900 hover:text-zinc-600 transition-all hover:scale-110">
+                                        <MessageCircle size={24} />
+                                    </button>
+                                    <button className="text-zinc-900 hover:text-zinc-600 transition-all hover:scale-110">
+                                        <Send size={24} />
+                                    </button>
+                                </div>
+                                <button
+                                    onClick={() => setIsSaved(!isSaved)}
+                                    className={`transition-all hover:scale-110 ${isSaved ? 'text-zinc-900' : 'text-zinc-900'}`}
+                                >
+                                    <Bookmark size={24} fill={isSaved ? 'currentColor' : 'none'} />
+                                </button>
+                            </div>
+                            <p className="text-sm font-semibold text-zinc-900 mb-1">128 likes</p>
+                            <p className="text-sm text-zinc-600">
+                                <span className="font-semibold text-zinc-900">{safeStr(profile?.nameEn) || 'designer'}</span> 品牌視覺設計作品
+                            </p>
+                            <p className="text-xs text-zinc-400 mt-2 uppercase">2 hours ago</p>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // ============ PDF 預覽元件 ============
+        const PdfViewer = ({ pdfUrl, onClose }) => {
+            return (
+                <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4">
+                    <button onClick={onClose} className="absolute top-6 right-6 p-2 bg-white text-zinc-900 rounded-full hover:bg-red-600 hover:text-white transition-all z-50">
+                        <X size={24} />
+                    </button>
+
+                    <div className="w-full max-w-4xl h-[85vh] bg-white rounded-xl overflow-hidden shadow-2xl flex flex-col">
+                        {/* Header */}
+                        <div className="flex items-center justify-between px-6 py-4 bg-zinc-50 border-b border-zinc-200">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 bg-red-100 text-red-600 rounded-lg animate-breathe">
+                                    <FileText size={20} />
+                                </div>
+                                <div>
+                                    <p className="text-sm font-bold text-zinc-900">互動模式</p>
+                                    <p className="text-xs text-zinc-500">可直接滾動瀏覽完整內容</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <a
+                                    href={pdfUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-zinc-600 bg-zinc-100 rounded-lg hover:bg-zinc-200 transition-all"
+                                >
+                                    <ExternalLink size={16} />
+                                    開新視窗
+                                </a>
+                                <a
+                                    href={pdfUrl}
+                                    download
+                                    className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-white bg-red-600 rounded-lg hover:bg-red-700 transition-all"
+                                >
+                                    <Download size={16} />
+                                    下載 PDF
+                                </a>
+                            </div>
+                        </div>
+
+                        {/* PDF Iframe */}
+                        <div className="flex-1 bg-zinc-200">
+                            <iframe
+                                src={pdfUrl}
+                                className="w-full h-full border-none"
+                                title="PDF Preview"
+                            />
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // ============ 並排展示元件 ============
+        const SimpleStackViewer = ({ images = [], title, onClose }) => {
+            return (
+                <div className="fixed inset-0 z-50 bg-white overflow-y-auto">
+                    <button onClick={onClose} className="fixed top-6 right-6 p-2 bg-red-600 text-white rounded-full hover:bg-red-700 transition-all z-50 shadow-lg">
+                        <X size={24} />
+                    </button>
+
+                    <div className="max-w-4xl mx-auto py-20 px-6">
+                        <h2 className="text-3xl font-black text-zinc-900 mb-12 text-center">{safeStr(title)}</h2>
+                        <div className="space-y-12">
+                            {images.map((img, idx) => (
+                                <div
+                                    key={idx}
+                                    className="group rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:scale-[1.01]"
+                                >
+                                    <img
+                                        src={img}
+                                        alt={`Work ${idx + 1}`}
+                                        className="w-full h-auto"
+                                    />
+                                </div>
+                            ))}
+                        </div>
+                        <div className="py-20 text-center">
+                            <p className="text-xs font-black uppercase tracking-[0.5em] text-zinc-300">End of Gallery</p>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // ============ 專案卡片元件 ============
+        const ProjectCard = ({ project, onClick }) => {
+            const getModeIcon = () => {
+                switch(project.displayMode) {
+                    case 'flipbook': return <BookOpen size={14} />;
+                    case 'instagram': return <Instagram size={14} />;
+                    case 'pdf': return <FileText size={14} />;
+                    default: return <Layers size={14} />;
+                }
+            };
+
+            return (
+                <div
+                    className="group cursor-pointer animate-fade-in"
+                    onClick={onClick}
+                >
+                    <div className="relative aspect-[3/4] overflow-hidden mb-6 rounded-sm transition-all duration-700 ease-out group-hover:shadow-2xl group-hover:-translate-y-2 shadow-sm bg-white ring-1 ring-black/5">
+                        {project.displayMode === 'flipbook' && (
+                            <div className="absolute left-0 top-0 bottom-0 w-6 bg-gradient-to-r from-black/10 via-black/5 to-transparent z-10"></div>
+                        )}
+                        <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-white/10 z-10 opacity-0 group-hover:opacity-100 duration-700"></div>
+                        <img
+                            src={project.image}
+                            alt={safeStr(project.title)}
+                            className="w-full h-full object-cover transition-all duration-1000 ease-out grayscale-[0.3] group-hover:grayscale-0 group-hover:scale-110"
+                        />
+                        <div className="absolute top-4 left-4 z-20">
+                            <div className="w-1.5 h-1.5 bg-red-600 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-500 scale-0 group-hover:scale-100"></div>
+                        </div>
+                        <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity flex gap-2 z-20">
+                            <div className="bg-white/90 p-1.5 rounded-full shadow-lg text-red-600">
+                                {getModeIcon()}
+                            </div>
+                        </div>
+                    </div>
+                    <div className="flex justify-between items-end border-b border-transparent group-hover:border-red-200 pb-2 transition-all px-1">
+                        <div>
+                            <div className="flex gap-2 mb-2">
+                                {(project.tags || []).map((tag, idx) => (
+                                    <span key={idx} className="text-[9px] uppercase tracking-wider bg-zinc-100 px-2 py-0.5 rounded-sm font-bold text-zinc-500 group-hover:text-red-500 transition-colors">
+                                        {safeStr(tag)}
+                                    </span>
+                                ))}
+                            </div>
+                            <h3 className="text-xl font-bold tracking-tight group-hover:text-red-600 transition-colors">{safeStr(project.title)}</h3>
+                            <p className="text-sm text-zinc-400 font-medium">{safeStr(project.subtitle)}</p>
+                        </div>
+                        <div className="w-6 h-6 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 group-hover:text-red-600 transition-all">
+                            <ExternalLink size={18} />
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // ============ 管理後台元件 ============
+        const AdminPanel = ({ data, setData, onClose, showToast }) => {
+            const [activeTab, setActiveTab] = useState('profile');
+            const [editingProject, setEditingProject] = useState(null);
+
+            const updateProfile = (field, value) => {
+                setData(prev => ({
+                    ...prev,
+                    profile: { ...prev.profile, [field]: value }
+                }));
+            };
+
+            const addExperience = () => {
+                setData(prev => ({
+                    ...prev,
+                    experience: [{ id: `exp_${Date.now()}`, period: '', role: '', company: '', desc: '' }, ...prev.experience]
+                }));
+            };
+
+            const updateExperience = (index, field, value) => {
+                setData(prev => ({
+                    ...prev,
+                    experience: prev.experience.map((exp, i) => i === index ? { ...exp, [field]: value } : exp)
+                }));
+            };
+
+            const deleteExperience = (index) => {
+                if (confirm('確定刪除此經歷？')) {
+                    setData(prev => ({
+                        ...prev,
+                        experience: prev.experience.filter((_, i) => i !== index)
+                    }));
+                }
+            };
+
+            const addEducation = () => {
+                setData(prev => ({
+                    ...prev,
+                    education: [{ id: `edu_${Date.now()}`, period: '', role: '', company: '' }, ...prev.education]
+                }));
+            };
+
+            const updateEducation = (index, field, value) => {
+                setData(prev => ({
+                    ...prev,
+                    education: prev.education.map((edu, i) => i === index ? { ...edu, [field]: value } : edu)
+                }));
+            };
+
+            const deleteEducation = (index) => {
+                if (confirm('確定刪除此學歷？')) {
+                    setData(prev => ({
+                        ...prev,
+                        education: prev.education.filter((_, i) => i !== index)
+                    }));
+                }
+            };
+
+            const addSkill = () => {
+                setData(prev => ({
+                    ...prev,
+                    skills: [...prev.skills, { id: `sk_${Date.now()}`, title: '', detail: '' }]
+                }));
+            };
+
+            const updateSkill = (index, field, value) => {
+                setData(prev => ({
+                    ...prev,
+                    skills: prev.skills.map((sk, i) => i === index ? { ...sk, [field]: value } : sk)
+                }));
+            };
+
+            const deleteSkill = (index) => {
+                if (confirm('確定刪除此技能？')) {
+                    setData(prev => ({
+                        ...prev,
+                        skills: prev.skills.filter((_, i) => i !== index)
+                    }));
+                }
+            };
+
+            const addTool = () => {
+                setData(prev => ({
+                    ...prev,
+                    softwareTools: [...prev.softwareTools, { id: `tool_${Date.now()}`, name: '', icon: '' }]
+                }));
+            };
+
+            const updateTool = (index, field, value) => {
+                setData(prev => ({
+                    ...prev,
+                    softwareTools: prev.softwareTools.map((tool, i) => i === index ? { ...tool, [field]: value } : tool)
+                }));
+            };
+
+            const deleteTool = (index) => {
+                if (confirm('確定刪除此工具？')) {
+                    setData(prev => ({
+                        ...prev,
+                        softwareTools: prev.softwareTools.filter((_, i) => i !== index)
+                    }));
+                }
+            };
+
+            const addProject = () => {
+                const newProject = {
+                    id: Date.now(),
+                    title: '',
+                    subtitle: '',
+                    category: '平面設計',
+                    displayMode: 'stack',
+                    tags: [],
+                    image: '',
+                    gallery: []
+                };
+                setData(prev => ({
+                    ...prev,
+                    projects: [newProject, ...prev.projects]
+                }));
+                setEditingProject(0);
+            };
+
+            const updateProject = (index, field, value) => {
+                setData(prev => ({
+                    ...prev,
+                    projects: prev.projects.map((p, i) => i === index ? { ...p, [field]: value } : p)
+                }));
+            };
+
+            const deleteProject = (index) => {
+                if (confirm('確定刪除此作品？')) {
+                    setData(prev => ({
+                        ...prev,
+                        projects: prev.projects.filter((_, i) => i !== index)
+                    }));
+                }
+            };
+
+            const addGalleryImage = (projectIndex) => {
+                setData(prev => ({
+                    ...prev,
+                    projects: prev.projects.map((p, i) =>
+                        i === projectIndex ? { ...p, gallery: [...(p.gallery || []), ''] } : p
+                    )
+                }));
+            };
+
+            const updateGalleryImage = (projectIndex, imageIndex, value) => {
+                setData(prev => ({
+                    ...prev,
+                    projects: prev.projects.map((p, i) =>
+                        i === projectIndex ? {
+                            ...p,
+                            gallery: p.gallery.map((img, j) => j === imageIndex ? value : img)
+                        } : p
+                    )
+                }));
+            };
+
+            const deleteGalleryImage = (projectIndex, imageIndex) => {
+                setData(prev => ({
+                    ...prev,
+                    projects: prev.projects.map((p, i) =>
+                        i === projectIndex ? {
+                            ...p,
+                            gallery: p.gallery.filter((_, j) => j !== imageIndex)
+                        } : p
+                    )
+                }));
+            };
+
+            const handleSave = () => {
+                if (saveData(data)) {
+                    showToast('資料已儲存！', 'success');
+                } else {
+                    showToast('儲存失敗', 'error');
+                }
+            };
+
+            const handleExport = () => {
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'portfolio_data.json';
+                a.click();
+                URL.revokeObjectURL(url);
+                showToast('資料已匯出！', 'success');
+            };
+
+            const handleImport = (e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        const imported = JSON.parse(event.target.result);
+                        setData(imported);
+                        showToast('資料已匯入！', 'success');
+                    } catch {
+                        showToast('匯入失敗：檔案格式錯誤', 'error');
+                    }
+                };
+                reader.readAsText(file);
+                e.target.value = '';
+            };
+
+            const tabs = [
+                { id: 'profile', label: '個人資料', icon: <Eye size={18} /> },
+                { id: 'experience', label: '工作經歷', icon: <Briefcase size={18} /> },
+                { id: 'education', label: '學歷', icon: <GraduationCap size={18} /> },
+                { id: 'skills', label: '專業技能', icon: <Sparkles size={18} /> },
+                { id: 'tools', label: '軟體工具', icon: <Monitor size={18} /> },
+                { id: 'projects', label: '作品集', icon: <Image size={18} /> }
+            ];
+
+            const displayModes = [
+                { value: 'stack', label: '並排展示', icon: <Layers size={16} /> },
+                { value: 'instagram', label: 'IG 輪播', icon: <Instagram size={16} /> },
+                { value: 'flipbook', label: '3D 翻書', icon: <BookOpen size={16} /> },
+                { value: 'pdf', label: 'PDF 預覽', icon: <FileText size={16} /> }
+            ];
+
+            const categories = ['平面設計', '品牌設計', '排版設計', '企業專案'];
+
+            return (
+                <div className="fixed inset-0 z-50 bg-zinc-900/50 backdrop-blur-sm flex">
+                    {/* Sidebar */}
+                    <div className="w-64 bg-zinc-900 text-white flex flex-col">
+                        <div className="p-6 border-b border-zinc-800">
+                            <h2 className="font-black text-xl">ADMIN<span className="text-red-500">.</span></h2>
+                            <p className="text-zinc-500 text-xs mt-1">視覺化管理後台</p>
+                        </div>
+                        <nav className="flex-1 p-4 space-y-1">
+                            {tabs.map(tab => (
+                                <button
+                                    key={tab.id}
+                                    onClick={() => setActiveTab(tab.id)}
+                                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all ${
+                                        activeTab === tab.id
+                                            ? 'bg-white text-zinc-900'
+                                            : 'text-zinc-400 hover:bg-zinc-800 hover:text-white'
+                                    }`}
+                                >
+                                    {tab.icon}
+                                    {tab.label}
+                                </button>
+                            ))}
+                        </nav>
+                        <div className="p-4 border-t border-zinc-800">
+                            <button onClick={onClose} className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-zinc-400 hover:bg-zinc-800 hover:text-white transition-all">
+                                <X size={18} />
+                                關閉後台
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Main Content */}
+                    <div className="flex-1 bg-zinc-50 overflow-hidden flex flex-col">
+                        {/* Header */}
+                        <header className="bg-white border-b border-zinc-200 px-8 py-4 flex justify-between items-center">
+                            <div>
+                                <h1 className="text-xl font-bold text-zinc-900">
+                                    {tabs.find(t => t.id === activeTab)?.label}
+                                </h1>
+                                <p className="text-sm text-zinc-500">編輯您的作品集內容</p>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <button onClick={handleExport} className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-zinc-600 bg-zinc-100 rounded-lg hover:bg-zinc-200 transition-all">
+                                    <Download size={16} />
+                                    匯出
+                                </button>
+                                <label className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-zinc-600 bg-zinc-100 rounded-lg hover:bg-zinc-200 transition-all cursor-pointer">
+                                    <Upload size={16} />
+                                    匯入
+                                    <input type="file" accept=".json" onChange={handleImport} className="hidden" />
+                                </label>
+                                <button onClick={handleSave} className="flex items-center gap-2 px-5 py-2 text-sm font-bold text-white bg-red-600 rounded-lg hover:bg-red-700 transition-all shadow-lg shadow-red-500/25">
+                                    <Save size={16} />
+                                    儲存變更
+                                </button>
+                            </div>
+                        </header>
+
+                        {/* Content */}
+                        <div className="flex-1 overflow-y-auto p-8">
+                            {/* Profile Tab */}
+                            {activeTab === 'profile' && (
+                                <div className="max-w-3xl space-y-6 animate-fade-in">
+                                    <div className="bg-white rounded-xl border border-zinc-200 p-6 space-y-6">
+                                        <div className="grid md:grid-cols-2 gap-4">
+                                            <div>
+                                                <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-2">中文姓名</label>
+                                                <input
+                                                    type="text"
+                                                    value={safeStr(data.profile?.name)}
+                                                    onChange={(e) => updateProfile('name', e.target.value)}
+                                                    className="w-full px-4 py-3 border border-zinc-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all text-lg font-bold"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-2">英文姓名</label>
+                                                <input
+                                                    type="text"
+                                                    value={safeStr(data.profile?.nameEn)}
+                                                    onChange={(e) => updateProfile('nameEn', e.target.value)}
+                                                    className="w-full px-4 py-3 border border-zinc-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-2">職稱</label>
+                                            <input
+                                                type="text"
+                                                value={safeStr(data.profile?.title)}
+                                                onChange={(e) => updateProfile('title', e.target.value)}
+                                                className="w-full px-4 py-3 border border-zinc-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all"
+                                            />
+                                        </div>
+                                        <div className="grid md:grid-cols-2 gap-4">
+                                            <div>
+                                                <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-2">所在地</label>
+                                                <input
+                                                    type="text"
+                                                    value={safeStr(data.profile?.location)}
+                                                    onChange={(e) => updateProfile('location', e.target.value)}
+                                                    className="w-full px-4 py-3 border border-zinc-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-2">Email</label>
+                                                <input
+                                                    type="email"
+                                                    value={safeStr(data.profile?.email)}
+                                                    onChange={(e) => updateProfile('email', e.target.value)}
+                                                    className="w-full px-4 py-3 border border-zinc-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-2">Instagram</label>
+                                            <input
+                                                type="url"
+                                                value={safeStr(data.profile?.instagram)}
+                                                onChange={(e) => updateProfile('instagram', e.target.value)}
+                                                className="w-full px-4 py-3 border border-zinc-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-2">自我介紹</label>
+                                            <textarea
+                                                value={safeStr(data.profile?.intro)}
+                                                onChange={(e) => updateProfile('intro', e.target.value)}
+                                                rows={3}
+                                                className="w-full px-4 py-3 border border-zinc-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all resize-none"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Experience Tab */}
+                            {activeTab === 'experience' && (
+                                <div className="space-y-4 animate-fade-in">
+                                    <button onClick={addExperience} className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-all">
+                                        <Plus size={16} />
+                                        新增經歷
+                                    </button>
+                                    {data.experience?.map((exp, index) => (
+                                        <div key={exp.id} className="bg-white rounded-xl border border-zinc-200 p-5 group hover:shadow-md transition-all">
+                                            <div className="grid md:grid-cols-4 gap-4">
+                                                <input
+                                                    type="text"
+                                                    value={safeStr(exp.period)}
+                                                    onChange={(e) => updateExperience(index, 'period', e.target.value)}
+                                                    placeholder="時間"
+                                                    className="px-3 py-2 border border-zinc-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+                                                />
+                                                <input
+                                                    type="text"
+                                                    value={safeStr(exp.company)}
+                                                    onChange={(e) => updateExperience(index, 'company', e.target.value)}
+                                                    placeholder="公司名稱"
+                                                    className="px-3 py-2 border border-zinc-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+                                                />
+                                                <input
+                                                    type="text"
+                                                    value={safeStr(exp.role)}
+                                                    onChange={(e) => updateExperience(index, 'role', e.target.value)}
+                                                    placeholder="職稱"
+                                                    className="px-3 py-2 border border-zinc-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+                                                />
+                                                <div className="flex gap-2">
+                                                    <input
+                                                        type="text"
+                                                        value={safeStr(exp.desc)}
+                                                        onChange={(e) => updateExperience(index, 'desc', e.target.value)}
+                                                        placeholder="描述"
+                                                        className="flex-1 px-3 py-2 border border-zinc-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+                                                    />
+                                                    <button onClick={() => deleteExperience(index)} className="p-2 text-zinc-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all">
+                                                        <Trash2 size={16} />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+
+                            {/* Education Tab */}
+                            {activeTab === 'education' && (
+                                <div className="space-y-4 animate-fade-in">
+                                    <button onClick={addEducation} className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition-all">
+                                        <Plus size={16} />
+                                        新增學歷
+                                    </button>
+                                    {data.education?.map((edu, index) => (
+                                        <div key={edu.id} className="bg-white rounded-xl border border-zinc-200 p-5 group hover:shadow-md transition-all">
+                                            <div className="grid md:grid-cols-4 gap-4">
+                                                <input
+                                                    type="text"
+                                                    value={safeStr(edu.period)}
+                                                    onChange={(e) => updateEducation(index, 'period', e.target.value)}
+                                                    placeholder="時間"
+                                                    className="px-3 py-2 border border-zinc-200 rounded-lg text-sm focus:ring-2 focus:ring-green-500"
+                                                />
+                                                <input
+                                                    type="text"
+                                                    value={safeStr(edu.company)}
+                                                    onChange={(e) => updateEducation(index, 'company', e.target.value)}
+                                                    placeholder="學校名稱"
+                                                    className="px-3 py-2 border border-zinc-200 rounded-lg text-sm focus:ring-2 focus:ring-green-500"
+                                                />
+                                                <input
+                                                    type="text"
+                                                    value={safeStr(edu.role)}
+                                                    onChange={(e) => updateEducation(index, 'role', e.target.value)}
+                                                    placeholder="科系"
+                                                    className="px-3 py-2 border border-zinc-200 rounded-lg text-sm focus:ring-2 focus:ring-green-500"
+                                                />
+                                                <button onClick={() => deleteEducation(index)} className="p-2 text-zinc-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all justify-self-start">
+                                                    <Trash2 size={16} />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+
+                            {/* Skills Tab */}
+                            {activeTab === 'skills' && (
+                                <div className="space-y-4 animate-fade-in">
+                                    <button onClick={addSkill} className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-purple-600 rounded-lg hover:bg-purple-700 transition-all">
+                                        <Plus size={16} />
+                                        新增技能
+                                    </button>
+                                    <div className="grid md:grid-cols-2 gap-4">
+                                        {data.skills?.map((skill, index) => (
+                                            <div key={skill.id} className="bg-white rounded-xl border border-zinc-200 p-5 group hover:shadow-md transition-all">
+                                                <div className="space-y-3">
+                                                    <div className="flex items-center gap-2">
+                                                        <input
+                                                            type="text"
+                                                            value={safeStr(skill.title)}
+                                                            onChange={(e) => updateSkill(index, 'title', e.target.value)}
+                                                            placeholder="技能名稱"
+                                                            className="flex-1 px-3 py-2 border border-zinc-200 rounded-lg text-sm font-bold focus:ring-2 focus:ring-purple-500"
+                                                        />
+                                                        <button onClick={() => deleteSkill(index)} className="p-2 text-zinc-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all">
+                                                            <Trash2 size={16} />
+                                                        </button>
+                                                    </div>
+                                                    <textarea
+                                                        value={safeStr(skill.detail)}
+                                                        onChange={(e) => updateSkill(index, 'detail', e.target.value)}
+                                                        placeholder="技能說明"
+                                                        rows={2}
+                                                        className="w-full px-3 py-2 border border-zinc-200 rounded-lg text-sm resize-none focus:ring-2 focus:ring-purple-500"
+                                                    />
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Tools Tab */}
+                            {activeTab === 'tools' && (
+                                <div className="space-y-4 animate-fade-in">
+                                    <button onClick={addTool} className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-cyan-600 rounded-lg hover:bg-cyan-700 transition-all">
+                                        <Plus size={16} />
+                                        新增工具
+                                    </button>
+                                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                        {data.softwareTools?.map((tool, index) => (
+                                            <div key={tool.id} className="bg-white rounded-xl border border-zinc-200 p-5 group hover:shadow-md transition-all">
+                                                <div className="flex items-start gap-4">
+                                                    {tool.icon && (
+                                                        <img src={tool.icon} alt={safeStr(tool.name)} className="w-12 h-12 object-contain" />
+                                                    )}
+                                                    <div className="flex-1 space-y-2">
+                                                        <input
+                                                            type="text"
+                                                            value={safeStr(tool.name)}
+                                                            onChange={(e) => updateTool(index, 'name', e.target.value)}
+                                                            placeholder="工具名稱"
+                                                            className="w-full px-3 py-2 border border-zinc-200 rounded-lg text-sm font-bold focus:ring-2 focus:ring-cyan-500"
+                                                        />
+                                                        <input
+                                                            type="url"
+                                                            value={safeStr(tool.icon)}
+                                                            onChange={(e) => updateTool(index, 'icon', e.target.value)}
+                                                            placeholder="圖示網址"
+                                                            className="w-full px-3 py-2 border border-zinc-200 rounded-lg text-xs focus:ring-2 focus:ring-cyan-500"
+                                                        />
+                                                    </div>
+                                                    <button onClick={() => deleteTool(index)} className="p-2 text-zinc-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all">
+                                                        <Trash2 size={16} />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Projects Tab */}
+                            {activeTab === 'projects' && (
+                                <div className="space-y-6 animate-fade-in">
+                                    <button onClick={addProject} className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-orange-600 rounded-lg hover:bg-orange-700 transition-all">
+                                        <Plus size={16} />
+                                        新增作品
+                                    </button>
+
+                                    {editingProject !== null && data.projects[editingProject] && (
+                                        <div className="bg-white rounded-xl border-2 border-red-200 p-6 space-y-6">
+                                            <div className="flex items-center justify-between">
+                                                <h3 className="font-bold text-lg text-zinc-900">編輯作品</h3>
+                                                <button onClick={() => setEditingProject(null)} className="p-2 text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 rounded-lg">
+                                                    <X size={20} />
+                                                </button>
+                                            </div>
+
+                                            <div className="grid md:grid-cols-2 gap-4">
+                                                <div>
+                                                    <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-2">作品名稱</label>
+                                                    <input
+                                                        type="text"
+                                                        value={safeStr(data.projects[editingProject].title)}
+                                                        onChange={(e) => updateProject(editingProject, 'title', e.target.value)}
+                                                        className="w-full px-4 py-3 border border-zinc-200 rounded-lg focus:ring-2 focus:ring-red-500"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-2">副標題</label>
+                                                    <input
+                                                        type="text"
+                                                        value={safeStr(data.projects[editingProject].subtitle)}
+                                                        onChange={(e) => updateProject(editingProject, 'subtitle', e.target.value)}
+                                                        className="w-full px-4 py-3 border border-zinc-200 rounded-lg focus:ring-2 focus:ring-red-500"
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            <div className="grid md:grid-cols-2 gap-4">
+                                                <div>
+                                                    <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-2">分類</label>
+                                                    <select
+                                                        value={safeStr(data.projects[editingProject].category)}
+                                                        onChange={(e) => updateProject(editingProject, 'category', e.target.value)}
+                                                        className="w-full px-4 py-3 border border-zinc-200 rounded-lg focus:ring-2 focus:ring-red-500 bg-white"
+                                                    >
+                                                        {categories.map(cat => (
+                                                            <option key={cat} value={cat}>{cat}</option>
+                                                        ))}
+                                                    </select>
+                                                </div>
+                                                <div>
+                                                    <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-2">展示模式</label>
+                                                    <select
+                                                        value={safeStr(data.projects[editingProject].displayMode)}
+                                                        onChange={(e) => updateProject(editingProject, 'displayMode', e.target.value)}
+                                                        className="w-full px-4 py-3 border border-zinc-200 rounded-lg focus:ring-2 focus:ring-red-500 bg-white"
+                                                    >
+                                                        {displayModes.map(mode => (
+                                                            <option key={mode.value} value={mode.value}>{mode.label}</option>
+                                                        ))}
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <div>
+                                                <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-2">標籤（逗號分隔）</label>
+                                                <input
+                                                    type="text"
+                                                    value={(data.projects[editingProject].tags || []).join(', ')}
+                                                    onChange={(e) => updateProject(editingProject, 'tags', e.target.value.split(',').map(t => t.trim()).filter(Boolean))}
+                                                    className="w-full px-4 py-3 border border-zinc-200 rounded-lg focus:ring-2 focus:ring-red-500"
+                                                />
+                                            </div>
+
+                                            <div>
+                                                <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-2">封面圖片</label>
+                                                <input
+                                                    type="url"
+                                                    value={safeStr(data.projects[editingProject].image)}
+                                                    onChange={(e) => updateProject(editingProject, 'image', e.target.value)}
+                                                    className="w-full px-4 py-3 border border-zinc-200 rounded-lg focus:ring-2 focus:ring-red-500"
+                                                    placeholder="https://..."
+                                                />
+                                                {data.projects[editingProject].image && (
+                                                    <img src={data.projects[editingProject].image} alt="Preview" className="mt-2 h-32 w-auto object-cover rounded-lg border" />
+                                                )}
+                                            </div>
+
+                                            {data.projects[editingProject].displayMode === 'pdf' ? (
+                                                <div>
+                                                    <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-2">PDF 網址</label>
+                                                    <input
+                                                        type="url"
+                                                        value={safeStr(data.projects[editingProject].pdfUrl)}
+                                                        onChange={(e) => updateProject(editingProject, 'pdfUrl', e.target.value)}
+                                                        className="w-full px-4 py-3 border border-zinc-200 rounded-lg focus:ring-2 focus:ring-red-500"
+                                                        placeholder="https://...pdf"
+                                                    />
+                                                </div>
+                                            ) : (
+                                                <div>
+                                                    <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-2">圖庫</label>
+                                                    <div className="space-y-2 mb-3">
+                                                        {(data.projects[editingProject].gallery || []).map((img, imgIdx) => (
+                                                            <div key={imgIdx} className="flex items-center gap-2">
+                                                                {img && <img src={img} alt="" className="w-16 h-16 object-cover rounded-lg border" />}
+                                                                <input
+                                                                    type="url"
+                                                                    value={safeStr(img)}
+                                                                    onChange={(e) => updateGalleryImage(editingProject, imgIdx, e.target.value)}
+                                                                    className="flex-1 px-3 py-2 border border-zinc-200 rounded-lg text-sm focus:ring-2 focus:ring-red-500"
+                                                                    placeholder="圖片網址"
+                                                                />
+                                                                <button onClick={() => deleteGalleryImage(editingProject, imgIdx)} className="p-2 text-zinc-400 hover:text-red-600 hover:bg-red-50 rounded-lg">
+                                                                    <X size={16} />
+                                                                </button>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                    <button onClick={() => addGalleryImage(editingProject)} className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-zinc-600 bg-zinc-100 rounded-lg hover:bg-zinc-200 transition-all">
+                                                        <Plus size={16} />
+                                                        新增圖片
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+
+                                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                        {data.projects?.map((project, index) => (
+                                            <div
+                                                key={project.id}
+                                                className={`bg-white rounded-xl border overflow-hidden group cursor-pointer transition-all hover:shadow-lg ${editingProject === index ? 'border-red-500 ring-2 ring-red-200' : 'border-zinc-200'}`}
+                                                onClick={() => setEditingProject(index)}
+                                            >
+                                                <div className="aspect-[4/3] bg-zinc-100 relative overflow-hidden">
+                                                    {project.image ? (
+                                                        <img src={project.image} alt={safeStr(project.title)} className="w-full h-full object-cover" />
+                                                    ) : (
+                                                        <div className="w-full h-full flex items-center justify-center text-zinc-300">
+                                                            <Image size={48} />
+                                                        </div>
+                                                    )}
+                                                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                                        <span className="text-white text-sm font-bold">點擊編輯</span>
+                                                    </div>
+                                                    <span className="absolute top-3 left-3 px-2 py-1 text-[10px] font-bold uppercase bg-white/90 text-zinc-700 rounded flex items-center gap-1">
+                                                        {displayModes.find(m => m.value === project.displayMode)?.icon}
+                                                        {displayModes.find(m => m.value === project.displayMode)?.label}
+                                                    </span>
+                                                </div>
+                                                <div className="p-4">
+                                                    <h3 className="font-bold text-zinc-900 mb-1">{safeStr(project.title) || '未命名作品'}</h3>
+                                                    <p className="text-sm text-zinc-500">{safeStr(project.subtitle)}</p>
+                                                </div>
+                                                <div className="px-4 pb-4">
+                                                    <button
+                                                        onClick={(e) => { e.stopPropagation(); deleteProject(index); }}
+                                                        className="w-full py-2 text-sm text-zinc-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all flex items-center justify-center gap-2"
+                                                    >
+                                                        <Trash2 size={14} />
+                                                        刪除作品
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // ============ 主應用程式 ============
+        const App = () => {
+            const [data, setData] = useState(() => loadData());
+            const [activeCategory, setActiveCategory] = useState('全部');
+            const [showAdmin, setShowAdmin] = useState(false);
+            const [selectedProject, setSelectedProject] = useState(null);
+            const [toasts, setToasts] = useState([]);
+
+            const showToast = useCallback((message, type = 'info') => {
+                const id = Date.now();
+                setToasts(prev => [...prev, { id, message, type }]);
+            }, []);
+
+            const removeToast = useCallback((id) => {
+                setToasts(prev => prev.filter(t => t.id !== id));
+            }, []);
+
+            const categories = ['全部', ...new Set(data.projects?.map(p => p.category) || [])];
+            const filteredProjects = activeCategory === '全部'
+                ? data.projects
+                : data.projects?.filter(p => p.category === activeCategory);
+
+            const openProjectViewer = (project) => {
+                setSelectedProject(project);
+            };
+
+            const closeProjectViewer = () => {
+                setSelectedProject(null);
+            };
+
+            const renderProjectViewer = () => {
+                if (!selectedProject) return null;
+
+                switch (selectedProject.displayMode) {
+                    case 'flipbook':
+                        return <FlipBookViewer images={selectedProject.gallery || []} onClose={closeProjectViewer} />;
+                    case 'instagram':
+                        return <InstagramCarousel images={selectedProject.gallery || []} profile={data.profile} onClose={closeProjectViewer} />;
+                    case 'pdf':
+                        return <PdfViewer pdfUrl={selectedProject.pdfUrl} onClose={closeProjectViewer} />;
+                    default:
+                        return <SimpleStackViewer images={selectedProject.gallery || []} title={selectedProject.title} onClose={closeProjectViewer} />;
+                }
+            };
+
+            const profile = data.profile || {};
+
+            return (
+                <div className="min-h-screen bg-[#FDFDFD] text-zinc-900 selection:bg-red-500 selection:text-white antialiased">
+                    {/* Toast Container */}
+                    <div className="fixed top-4 right-4 z-[100] space-y-2">
+                        {toasts.map(toast => (
+                            <Toast key={toast.id} message={toast.message} type={toast.type} onClose={() => removeToast(toast.id)} />
+                        ))}
+                    </div>
+
+                    {/* Navbar */}
+                    <nav className="fixed w-full z-40 bg-white/70 backdrop-blur-xl border-b border-zinc-100 px-6">
+                        <div className="max-w-7xl mx-auto h-16 flex justify-between items-center">
+                            <div className="font-black text-xl tracking-tighter flex items-center gap-1">
+                                DESIGNER<span className="text-red-600">.</span>
+                            </div>
+                            <div className="flex items-center gap-6 text-[10px] font-bold uppercase tracking-widest text-zinc-400">
+                                <a href="#about" className="hover:text-red-600 transition-colors hidden md:block">Profile</a>
+                                <a href="#work" className="hover:text-red-600 transition-colors hidden md:block">Works</a>
+                                <a href="#contact" className="hover:text-red-600 transition-colors hidden md:block">Contact</a>
+                                <button
+                                    onClick={() => setShowAdmin(true)}
+                                    className="flex items-center gap-1 hover:text-red-600 transition-colors"
+                                >
+                                    <Settings size={12} />
+                                    Admin
+                                </button>
+                            </div>
+                        </div>
+                    </nav>
+
+                    {/* Header */}
+                    <header id="about" className="pt-32 pb-20 px-6 max-w-7xl mx-auto border-b border-zinc-100">
+                        <div className="grid lg:grid-cols-12 gap-12 lg:gap-24">
+                            <div className="lg:col-span-4 space-y-8">
+                                <div>
+                                    <p className="text-xs font-bold uppercase tracking-[0.3em] text-zinc-400 mb-4 flex items-center gap-2">
+                                        {safeStr(profile.title)?.split('/').map((part, i) => (
+                                            <span key={i} className="flex items-center gap-2">
+                                                {i > 0 && <span className="w-1 h-1 bg-red-500 rounded-full"></span>}
+                                                {part.trim()}
+                                            </span>
+                                        ))}
+                                    </p>
+                                    <h1 className="text-6xl md:text-7xl font-black tracking-tighter leading-none mb-6 relative">
+                                        {safeStr(profile.name)}<br />
+                                        <span className="text-4xl md:text-5xl">{safeStr(profile.nameEn)}</span>
+                                        <span className="absolute -right-4 bottom-2 w-3 h-3 bg-red-600 rounded-full animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.5)]"></span>
+                                    </h1>
+                                    <div className="flex flex-wrap items-center gap-4 text-sm text-zinc-500 font-medium">
+                                        <MapPin size={14} className="text-red-500" />
+                                        {safeStr(profile.location)}
+                                    </div>
+                                </div>
+                                <p className="text-lg text-zinc-600 leading-relaxed italic">
+                                    {safeStr(profile.intro)}
+                                </p>
+                                <div className="pt-4 flex items-center gap-6">
+                                    <a href={`mailto:${safeStr(profile.email)}`} className="text-sm font-bold border-b-2 border-red-600 pb-1 hover:text-red-600 transition-all uppercase tracking-widest inline-flex items-center gap-2 group">
+                                        {safeStr(profile.email)}
+                                        <ExternalLink size={14} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                                    </a>
+                                    {profile.instagram && (
+                                        <a href={safeStr(profile.instagram)} target="_blank" rel="noopener noreferrer" className="p-2 border border-zinc-100 rounded-full hover:bg-zinc-100 transition-colors text-zinc-400 hover:text-red-600">
+                                            <Instagram size={20} />
+                                        </a>
+                                    )}
+                                </div>
+
+                                {/* Software Tools */}
+                                {data.softwareTools?.length > 0 && (
+                                    <div className="pt-6 border-t border-zinc-100">
+                                        <p className="text-xs font-bold uppercase tracking-widest text-zinc-400 mb-4">Tools</p>
+                                        <div className="flex flex-wrap gap-3">
+                                            {data.softwareTools.map(tool => (
+                                                <div key={tool.id} className="group relative">
+                                                    {tool.icon && (
+                                                        <img
+                                                            src={tool.icon}
+                                                            alt={safeStr(tool.name)}
+                                                            className="w-8 h-8 object-contain grayscale hover:grayscale-0 transition-all"
+                                                            title={safeStr(tool.name)}
+                                                        />
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="lg:col-span-8 grid md:grid-cols-2 gap-12 border-l border-zinc-100 lg:pl-12">
+                                {/* Experience */}
+                                <div className="space-y-10">
+                                    <div className="flex items-center gap-3 border-b border-zinc-900 pb-2 mb-8 text-red-600">
+                                        <Briefcase size={16} />
+                                        <h2 className="text-xs font-black uppercase text-zinc-900">工作經歷 / Work</h2>
+                                    </div>
+                                    <div className="relative border-l border-zinc-200">
+                                        {data.experience?.map((exp, idx) => (
+                                            <div key={exp.id} className="relative pl-8 pb-10 group">
+                                                <div className="absolute left-[-4.5px] top-1.5 w-2.5 h-2.5 rounded-full bg-white border-2 border-red-500 group-hover:bg-red-500 transition-all"></div>
+                                                <p className="text-[10px] font-bold text-zinc-400 mb-2 tracking-widest uppercase">{safeStr(exp.period)}</p>
+                                                <h3 className="font-bold text-base text-zinc-900 group-hover:text-red-600 transition-colors mb-1">{safeStr(exp.company)}</h3>
+                                                <p className="text-sm font-medium text-zinc-600 mb-3">{safeStr(exp.role)}</p>
+                                                {exp.desc && <p className="text-xs text-zinc-400 leading-relaxed">{safeStr(exp.desc)}</p>}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Education & Skills */}
+                                <div className="space-y-12">
+                                    <div>
+                                        <div className="flex items-center gap-3 border-b border-zinc-900 pb-2 mb-8 text-red-600">
+                                            <GraduationCap size={16} />
+                                            <h2 className="text-xs font-black uppercase text-zinc-900">學歷 / Education</h2>
+                                        </div>
+                                        <div className="relative border-l border-zinc-200">
+                                            {data.education?.map((edu) => (
+                                                <div key={edu.id} className="relative pl-8 pb-8 group">
+                                                    <div className="absolute left-[-4.5px] top-1.5 w-2.5 h-2.5 rounded-full bg-white border-2 border-red-500 group-hover:bg-red-500 transition-all"></div>
+                                                    <p className="text-[10px] font-bold text-zinc-400 mb-2 tracking-widest uppercase">{safeStr(edu.period)}</p>
+                                                    <h3 className="font-bold text-base text-zinc-900 group-hover:text-red-600 transition-colors mb-1">{safeStr(edu.company)}</h3>
+                                                    <p className="text-sm font-medium text-zinc-600">{safeStr(edu.role)}</p>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <div className="flex items-center gap-3 border-b border-zinc-900 pb-2 mb-6 text-red-600">
+                                            <Sparkles size={16} />
+                                            <h2 className="text-xs font-black uppercase text-zinc-900">專業技能 / Skills</h2>
+                                        </div>
+                                        <div className="space-y-4">
+                                            {data.skills?.map((skill) => (
+                                                <div key={skill.id} className="group/skill">
+                                                    <h4 className="text-[11px] font-black uppercase tracking-widest text-zinc-900 mb-1 flex items-center gap-2 group-hover/skill:text-red-600 transition-colors">
+                                                        <span className="w-1 h-1 bg-red-500 rounded-full opacity-0 group-hover/skill:opacity-100 transition-opacity"></span>
+                                                        {safeStr(skill.title)}
+                                                    </h4>
+                                                    <p className="text-[10px] text-zinc-500 leading-relaxed pl-3 border-l border-zinc-100 group-hover/skill:border-red-200 transition-colors">
+                                                        {safeStr(skill.detail)}
+                                                    </p>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </header>
+
+                    {/* Works Filter */}
+                    <div id="work" className="sticky top-16 z-30 bg-[#FDFDFD]/90 backdrop-blur-sm border-b border-zinc-100 mb-12 px-6">
+                        <div className="max-w-7xl mx-auto py-6 flex justify-between items-center">
+                            <h2 className="text-xs font-black uppercase tracking-[0.3em]">Selected Works</h2>
+                            <div className="flex gap-6 overflow-x-auto no-scrollbar">
+                                {categories.map(cat => (
+                                    <button
+                                        key={cat}
+                                        onClick={() => setActiveCategory(cat)}
+                                        className={`whitespace-nowrap text-[10px] font-bold uppercase tracking-widest transition-all ${
+                                            activeCategory === cat
+                                                ? 'text-red-600 border-b-2 border-red-600 pb-1'
+                                                : 'text-zinc-400 hover:text-zinc-900'
+                                        }`}
+                                    >
+                                        {cat}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Works Grid */}
+                    <main className="px-6 max-w-7xl mx-auto pb-32">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-20">
+                            {filteredProjects?.map(project => (
+                                <ProjectCard
+                                    key={project.id}
+                                    project={project}
+                                    onClick={() => openProjectViewer(project)}
+                                />
+                            ))}
+                        </div>
+                    </main>
+
+                    {/* Contact */}
+                    <section id="contact" className="py-32 px-6 max-w-7xl mx-auto border-t text-center">
+                        <h2 className="text-xs font-black uppercase text-zinc-400 flex justify-center items-center gap-2 mb-12">
+                            <span className="w-8 h-px bg-zinc-100"></span>
+                            Get in touch
+                            <span className="w-8 h-px bg-zinc-100"></span>
+                        </h2>
+                        <div className="flex flex-col items-center gap-6">
+                            <a href={`mailto:${safeStr(profile.email)}`} className="text-2xl md:text-4xl font-bold tracking-tighter hover:text-red-600 transition-colors relative group">
+                                {safeStr(profile.email)}
+                                <span className="absolute -right-3 top-1 w-2 h-2 bg-red-600 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                            </a>
+                        </div>
+                    </section>
+
+                    {/* Footer */}
+                    <footer className="px-6 py-12 border-t border-zinc-100 text-center text-zinc-400 text-[9px] uppercase tracking-widest italic">
+                        <p>&copy; 2026 Designed for Professional Impact <span className="w-1 h-1 bg-red-500 inline-block mx-2 rounded-full"></span> React Portfolio</p>
+                    </footer>
+
+                    {/* Project Viewer */}
+                    {renderProjectViewer()}
+
+                    {/* Admin Panel */}
+                    {showAdmin && (
+                        <AdminPanel
+                            data={data}
+                            setData={setData}
+                            onClose={() => setShowAdmin(false)}
+                            showToast={showToast}
+                        />
+                    )}
+                </div>
+            );
+        };
+
+        // Render
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

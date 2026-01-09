@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>王郁平 | 視覺設計師作品集</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* 3D Flip Book Styles */
+        .perspective-1500 { perspective: 1500px; }
+        .preserve-3d { transform-style: preserve-3d; }
+        .backface-hidden { backface-visibility: hidden; }
+        .rotate-y-180 { transform: rotateY(-180deg); }
+        .origin-left { transform-origin: left center; }
+        .page-flip { transition: transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1); }
+
+        /* Breathing Animation */
+        @keyframes breathe {
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.1); }
+        }
+        .animate-breathe { animation: breathe 2s ease-in-out infinite; }
+    </style>
+</head>
+<body class="min-h-screen bg-[#FDFDFD] text-zinc-900 selection:bg-red-500 selection:text-white antialiased">
+
+    <!-- Navbar -->
+    <nav class="fixed w-full z-40 bg-white/70 backdrop-blur-xl border-b border-zinc-100 px-6">
+        <div class="max-w-7xl mx-auto h-16 flex justify-between items-center">
+            <div class="font-black text-xl tracking-tighter flex items-center gap-1">
+                DESIGNER<span class="text-red-600">.</span>
+            </div>
+            <div class="hidden md:flex gap-6 text-[10px] font-bold uppercase tracking-widest text-zinc-400">
+                <a href="#about" class="hover:text-red-600 transition-colors">Profile</a>
+                <a href="#work" class="hover:text-red-600 transition-colors">Works</a>
+                <a href="#contact" class="hover:text-red-600 transition-colors">Contact</a>
+                <a href="#" onclick="openAdminLogin(event)" class="hover:text-red-600 transition-colors flex items-center gap-1">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    Admin
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Admin Login Modal -->
+    <div id="admin-login-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm">
+        <div class="bg-white rounded-xl shadow-2xl p-8 w-full max-w-sm mx-4">
+            <div class="text-center mb-6">
+                <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                </div>
+                <h3 class="text-xl font-bold text-zinc-900">管理員登入</h3>
+                <p class="text-sm text-zinc-500 mt-1">請輸入密碼以進入後台</p>
+            </div>
+            <form onsubmit="checkAdminPassword(event)">
+                <input type="password" id="admin-password" placeholder="輸入密碼" class="w-full px-4 py-3 border border-zinc-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent mb-4" autofocus>
+                <p id="password-error" class="text-red-500 text-sm mb-4 hidden">密碼錯誤，請重試</p>
+                <div class="flex gap-3">
+                    <button type="button" onclick="closeAdminLogin()" class="flex-1 px-4 py-3 text-sm font-medium text-zinc-600 bg-zinc-100 rounded-lg hover:bg-zinc-200 transition-all">取消</button>
+                    <button type="submit" class="flex-1 px-4 py-3 text-sm font-bold text-white bg-red-600 rounded-lg hover:bg-red-700 transition-all">登入</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Header / About Section -->
+    <header id="about" class="pt-32 pb-20 px-6 max-w-7xl mx-auto border-b border-zinc-100">
+        <div class="grid lg:grid-cols-12 gap-12 lg:gap-24">
+            <!-- Left Column -->
+            <div class="lg:col-span-4 space-y-8">
+                <div>
+                    <p id="profile-title-display" class="text-xs font-bold uppercase tracking-[0.3em] text-zinc-400 mb-4 flex items-center gap-2">
+                        Graphic Designer <span class="w-1 h-1 bg-red-500 rounded-full"></span> Visual Artist
+                    </p>
+                    <h1 class="text-6xl md:text-7xl font-black tracking-tighter leading-none mb-6 relative">
+                        <span id="profile-name-display">王郁平</span><br /><span id="profile-nameEn-display" class="text-4xl md:text-5xl">YuPing Wang</span>
+                        <span class="absolute -right-4 bottom-2 w-3 h-3 bg-red-600 rounded-full animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.5)]"></span>
+                    </h1>
+                    <div class="flex flex-wrap items-center gap-4 text-sm text-zinc-500 font-medium">
+                        <svg class="w-3.5 h-3.5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                        <span id="profile-location-display">Taipei, Taiwan</span>
+                    </div>
+                </div>
+                <p id="profile-intro-display" class="text-lg text-zinc-600 leading-relaxed italic">
+                    「從品牌的靈魂雕琢到大型商業專刊的精密排版，我致力於透過視覺語言與 AI 協作，為客戶創造最具前瞻性的商業價值。」
+                </p>
+                <div class="pt-4 flex items-center gap-6">
+                    <a id="profile-email-link" href="mailto:phinainaina@gmail.com" class="text-sm font-bold border-b-2 border-red-600 pb-1 hover:text-red-600 transition-all uppercase tracking-widest inline-flex items-center gap-2 group">
+                        <span id="profile-email-display">phinainaina@gmail.com</span>
+                        <svg class="w-3.5 h-3.5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+                    </a>
+                    <a id="profile-instagram-link" href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="p-2 border border-zinc-100 rounded-full hover:bg-zinc-100 transition-colors text-zinc-400 hover:text-red-600">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="lg:col-span-8 grid md:grid-cols-2 gap-12 border-l border-zinc-100 lg:pl-12">
+                <!-- Work Experience -->
+                <div class="space-y-10">
+                    <div class="flex items-center gap-3 border-b border-zinc-900 pb-2 mb-8 text-red-600">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                        <h2 class="text-xs font-black uppercase text-zinc-900">工作經歷 / Work</h2>
+                    </div>
+                    <div class="relative" id="experience-timeline">
+                        <!-- Timeline items will be rendered here -->
+                    </div>
+                </div>
+
+                <!-- Education & Skills -->
+                <div class="space-y-12">
+                    <!-- Education -->
+                    <div>
+                        <div class="flex items-center gap-3 border-b border-zinc-900 pb-2 mb-8 text-red-600">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 14l9-5-9-5-9 5 9 5z"/><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"/></svg>
+                            <h2 class="text-xs font-black uppercase text-zinc-900">學歷 / Education</h2>
+                        </div>
+                        <div class="relative" id="education-timeline">
+                            <!-- Education items will be rendered here -->
+                        </div>
+                    </div>
+
+                    <!-- Professional Skills -->
+                    <div>
+                        <div class="flex items-center gap-3 border-b border-zinc-900 pb-2 mb-6 text-red-600">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                            <h2 class="text-xs font-black uppercase text-zinc-900">專業技能 / Skills</h2>
+                        </div>
+                        <div class="space-y-4" id="skills-list">
+                            <!-- Skills will be rendered here -->
+                        </div>
+                    </div>
+
+                    <!-- Tools -->
+                    <div>
+                        <div class="flex items-center gap-3 border-b border-zinc-900 pb-2 mb-6 text-red-600">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                            <h2 class="text-xs font-black uppercase text-zinc-900">工具 / Tools</h2>
+                        </div>
+                        <div class="flex flex-wrap gap-3" id="tools-list">
+                            <!-- Tools will be rendered here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Works Filter Bar -->
+    <div id="work" class="sticky top-16 z-30 bg-[#FDFDFD]/90 backdrop-blur-sm border-b border-zinc-100 mb-12 px-6">
+        <div class="max-w-7xl mx-auto py-6 flex justify-between items-center">
+            <h2 class="text-xs font-black uppercase tracking-[0.3em]">Selected Works</h2>
+            <div class="flex gap-6 overflow-x-auto no-scrollbar" id="filter-buttons">
+                <!-- Filter buttons will be rendered here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Works Grid -->
+    <main class="px-6 max-w-7xl mx-auto pb-32">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-20" id="projects-grid">
+            <!-- Projects will be rendered here -->
+        </div>
+    </main>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-32 px-6 max-w-7xl mx-auto border-t text-center">
+        <h2 class="text-xs font-black uppercase text-zinc-400 flex justify-center items-center gap-2 mb-12">
+            <span class="w-8 h-px bg-zinc-100"></span>
+            Get in touch
+            <span class="w-8 h-px bg-zinc-100"></span>
+        </h2>
+        <div class="flex flex-col items-center gap-6">
+            <a id="contact-email-link" href="mailto:phinainaina@gmail.com" class="text-2xl md:text-4xl font-bold tracking-tighter hover:text-red-600 transition-colors relative group">
+                <span id="contact-email-display">phinainaina@gmail.com</span>
+                <span class="absolute -right-3 top-1 w-2 h-2 bg-red-600 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
+            </a>
+        </div>
+    </section>
+
+    <!-- Project Modal -->
+    <div id="project-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-white/98 backdrop-blur-xl">
+        <div class="w-full max-w-6xl max-h-[95vh] overflow-y-auto relative no-scrollbar bg-white p-8 md:p-12 shadow-2xl rounded-sm border border-zinc-100">
+            <button onclick="closeModal()" class="fixed top-8 right-8 z-50 p-2 bg-red-600 text-white rounded-full hover:scale-110 transition-all shadow-lg">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+            <div class="grid lg:grid-cols-12 gap-12">
+                <div class="lg:col-span-4">
+                    <span class="text-[10px] uppercase font-black text-red-500 mb-4 block" id="modal-category">Project Detail</span>
+                    <h2 class="text-5xl font-black mb-6 tracking-tighter leading-none" id="modal-title">Project Title</h2>
+                    <p class="text-xl text-zinc-500 mb-10 font-medium" id="modal-subtitle">Subtitle</p>
+                    <div class="border-t border-zinc-100 pt-8 space-y-6">
+                        <div>
+                            <h4 class="font-black mb-3 uppercase text-[10px] tracking-widest text-red-600">Project Scope</h4>
+                            <p class="text-zinc-600 text-sm leading-relaxed" id="modal-desc">
+                                此專案致力於在保持品牌核心精神的同時，優化其在多元載體上的視覺表現。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="lg:col-span-8 flex items-center justify-center min-h-[550px]" id="modal-content">
+                    <div class="w-full aspect-[4/5] bg-zinc-50 rounded-sm overflow-hidden ring-1 ring-zinc-100 shadow-2xl">
+                        <img id="modal-image" src="" class="w-full h-full object-cover" alt="Detail" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="px-6 py-12 border-t border-zinc-100 text-center text-zinc-400 text-[9px] uppercase tracking-widest italic">
+        <p>&copy; 2026 Designed for Professional Impact <span class="w-1 h-1 bg-red-500 inline-block mx-2 rounded-full"></span> Portfolio v5.4</p>
+    </footer>
+
+    <script>
+        // ============ Admin Password Protection ============
+        // 修改此處的密碼（預設：admin123）
+        const ADMIN_PASSWORD = 'phina9693';
+
+        function openAdminLogin(e) {
+            e.preventDefault();
+            const modal = document.getElementById('admin-login-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.getElementById('admin-password').value = '';
+            document.getElementById('password-error').classList.add('hidden');
+            document.getElementById('admin-password').focus();
+        }
+
+        function closeAdminLogin() {
+            const modal = document.getElementById('admin-login-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function checkAdminPassword(e) {
+            e.preventDefault();
+            const password = document.getElementById('admin-password').value;
+            if (password === ADMIN_PASSWORD) {
+                closeAdminLogin();
+                window.location.href = 'admin.html';
+            } else {
+                document.getElementById('password-error').classList.remove('hidden');
+                document.getElementById('admin-password').value = '';
+                document.getElementById('admin-password').focus();
+            }
+        }
+
+        // Close modal on backdrop click
+        document.getElementById('admin-login-modal')?.addEventListener('click', function(e) {
+            if (e.target === this) closeAdminLogin();
+        });
+
+        // Close modal on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeAdminLogin();
+        });
+
+        // Default Data (fallback if no localStorage data)
+        const DEFAULT_DATA = {
+            profile: {
+                name: "王郁平",
+                nameEn: "YuPing Wang",
+                title: "Graphic Designer / Visual Artist",
+                location: "Taipei, Taiwan",
+                email: "phinainaina@gmail.com",
+                instagram: "https://instagram.com",
+                intro: "「從品牌的靈魂雕琢到大型商業專刊的精密排版，我致力於透過視覺語言與 AI 協作，為客戶創造最具前瞻性的商業價值。」"
+            },
+            experience: [
+                { id: 'exp1', period: "2024.07 – 至今", role: "平面視覺設計師", company: "來電司康 ENSCON", desc: "專注於品牌核心視覺發展與多維度設計執行。" },
+                { id: 'exp2', period: "2022.02 – 2024.06", role: "自由設計師 (SOHO)", company: "獨立承接 / Freelance", desc: "負責跨產業品牌設計，完成全流程視覺規劃。" },
+                { id: 'exp3', period: "2020.12 – 2022.02", role: "電商品牌設計專員", company: "十方力有限公司", desc: "主導官網視覺與包裝設計，串聯行銷與營運需求。" },
+                { id: 'exp4', period: "2017.09 – 2019.06", role: "美工宣傳專員", company: "太平洋崇光百貨 (SOGO)", desc: "執行天母館大型檔期專刊排版。" }
+            ],
+            education: [
+                { id: 'edu1', period: "2018 - 2022", role: "視覺傳達設計系", company: "明志科技大學" },
+                { id: 'edu2', period: "2015 - 2018", role: "廣告設計科", company: "臺北市立士林高級商業職業學校" }
+            ],
+            skills: [
+                { id: 'sk1', title: "品牌視覺識別 (VI)", detail: "標誌設計、色彩規範、品牌應用延伸。" },
+                { id: 'sk2', title: "電商視覺設計", detail: "官網 Banner、社群圖文、素材規劃。" },
+                { id: 'sk3', title: "平面排版印刷", detail: "百貨專刊設計、大型輸出、印刷管控。" },
+                { id: 'sk4', title: "影像企劃與剪輯", detail: "產品攝影、短影音剪輯、動態視覺。" },
+                { id: 'sk5', title: "AI 數位工作流", detail: "提示詞工程、AI 生成影像與音效。" }
+            ],
+            softwareTools: [
+                { id: 'tool1', name: "Adobe Photoshop", icon: "https://upload.wikimedia.org/wikipedia/commons/a/af/Adobe_Photoshop_CC_icon.svg" },
+                { id: 'tool2', name: "Adobe Illustrator", icon: "https://upload.wikimedia.org/wikipedia/commons/f/fb/Adobe_Illustrator_CC_icon.svg" },
+                { id: 'tool3', name: "Adobe InDesign", icon: "https://upload.wikimedia.org/wikipedia/commons/4/48/Adobe_InDesign_CC_icon.svg" },
+                { id: 'tool4', name: "Adobe Premiere Pro", icon: "https://upload.wikimedia.org/wikipedia/commons/4/40/Adobe_Premiere_Pro_CC_icon.svg" },
+                { id: 'tool5', name: "Adobe Firefly", icon: "https://www.adobe.com/cc-shared/assets/img/product-icons/svg/firefly.svg" },
+                { id: 'tool6', name: "Gemini", icon: "https://upload.wikimedia.org/wikipedia/commons/8/8a/Google_Gemini_logo.svg" },
+                { id: 'tool7', name: "Suno", icon: "https://suno.com/favicon.ico" },
+                { id: 'tool8', name: "Cursor", icon: "https://www.cursor.com/favicon.ico" }
+            ],
+            projects: [
+                {
+                    id: 15,
+                    title: "2025 海報系列",
+                    subtitle: "平面印刷實驗",
+                    category: "平面設計",
+                    tags: ["海報", "印刷"],
+                    displayMode: "stack",
+                    image: "https://images.unsplash.com/photo-1558591710-4b4a1ae0f04d?q=80&w=1000&auto=format&fit=crop",
+                    gallery: [
+                        "https://images.unsplash.com/photo-1558591710-4b4a1ae0f04d?q=80&w=1000&auto=format&fit=crop",
+                        "https://images.unsplash.com/photo-1561070791-2526d30994b5?q=80&w=1000&auto=format&fit=crop",
+                        "https://images.unsplash.com/photo-1541701494587-cb58502866ab?q=80&w=1000&auto=format&fit=crop"
+                    ]
+                },
+                {
+                    id: 14,
+                    title: "ENSCON 品牌識別",
+                    subtitle: "社群視覺系統",
+                    category: "品牌設計",
+                    tags: ["品牌", "社群"],
+                    displayMode: "instagram",
+                    igAspectRatio: "portrait",
+                    image: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=1000&auto=format&fit=crop",
+                    gallery: [
+                        "https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=1000&auto=format&fit=crop",
+                        "https://images.unsplash.com/photo-1611162616305-c69b3fa7fbe0?q=80&w=1000&auto=format&fit=crop",
+                        "https://images.unsplash.com/photo-1611162618071-b39a2ec055fb?q=80&w=1000&auto=format&fit=crop"
+                    ]
+                },
+                {
+                    id: 12,
+                    title: "鴻海科技集團",
+                    subtitle: "供應商責任報告書",
+                    category: "企業專案",
+                    tags: ["ESG", "PDF預覽"],
+                    displayMode: "pdf",
+                    image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1000&auto=format&fit=crop",
+                    pdfUrl: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
+                },
+                {
+                    id: 10,
+                    title: "天母 SOGO 專刊",
+                    subtitle: "2024 化妝品特輯",
+                    category: "排版設計",
+                    tags: ["百貨", "3D翻書"],
+                    displayMode: "flipbook",
+                    image: "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?q=80&w=1000&auto=format&fit=crop",
+                    gallery: [
+                        "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?q=80&w=1000&auto=format&fit=crop",
+                        "https://images.unsplash.com/photo-1586717791821-3f44a563eb4c?q=80&w=1000&auto=format&fit=crop",
+                        "https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=1000&auto=format&fit=crop",
+                        "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?q=80&w=1000&auto=format&fit=crop"
+                    ]
+                }
+            ]
+        };
+
+        // Load data from localStorage or use defaults
+        function loadPortfolioData() {
+            const saved = localStorage.getItem('portfolio_data');
+            if (saved) {
+                try {
+                    return JSON.parse(saved);
+                } catch (e) {
+                    console.error('Failed to parse saved data:', e);
+                }
+            }
+            return DEFAULT_DATA;
+        }
+
+        const portfolioData = loadPortfolioData();
+        const profile = portfolioData.profile;
+        const experience = portfolioData.experience;
+        const education = portfolioData.education;
+        const skills = portfolioData.skills;
+        const softwareTools = portfolioData.softwareTools || [];
+        const projects = portfolioData.projects;
+
+        const categories = ['全部', ...new Set(projects.map(p => p.category))];
+        let activeCategory = '全部';
+
+        // Render Timeline Item
+        function renderTimelineItem(item, isLast) {
+            const descHtml = item.desc ? `<p class="text-xs text-zinc-400 leading-relaxed max-w-sm whitespace-pre-line">${item.desc}</p>` : '';
+            const lineHtml = isLast ? '' : '<div class="absolute left-[3px] top-4 bottom-0 w-px bg-zinc-200"></div>';
+
+            return `
+                <div class="relative pl-8 pb-8 group">
+                    <!-- Timeline line -->
+                    ${lineHtml}
+                    <!-- Timeline dot -->
+                    <div class="absolute left-0 top-1.5 w-[7px] h-[7px] rounded-full bg-zinc-300 group-hover:bg-red-500 transition-all z-10"></div>
+                    <p class="text-[10px] font-bold text-zinc-400 mb-2 tracking-widest uppercase">${item.period}</p>
+                    <h3 class="font-bold text-base text-zinc-900 group-hover:text-red-600 transition-colors mb-1">${item.company}</h3>
+                    <p class="text-sm font-medium text-zinc-600 mb-3">${item.role}</p>
+                    ${descHtml}
+                </div>
+            `;
+        }
+
+        // Render Skill Item
+        function renderSkillItem(skill) {
+            return `
+                <div class="group/skill">
+                    <h4 class="text-base font-bold text-zinc-900 mb-1 flex items-center gap-2 group-hover/skill:text-red-600 transition-colors">
+                        <span class="w-1 h-1 bg-red-500 rounded-full opacity-0 group-hover/skill:opacity-100 transition-opacity"></span>
+                        ${skill.title}
+                    </h4>
+                    <p class="text-xs text-zinc-500 leading-relaxed pl-3 border-l border-zinc-100 group-hover/skill:border-red-200 transition-colors">
+                        ${skill.detail}
+                    </p>
+                </div>
+            `;
+        }
+
+        // Render Tool Item
+        function renderToolItem(tool) {
+            return `
+                <div class="group/tool flex items-center gap-2 px-3 py-2 bg-zinc-50 rounded-lg hover:bg-red-50 transition-all cursor-default">
+                    ${tool.icon ? `<img src="${tool.icon}" alt="${tool.name}" class="w-5 h-5 object-contain">` : '<div class="w-5 h-5 bg-zinc-200 rounded"></div>'}
+                    <span class="text-[10px] font-medium text-zinc-600 group-hover/tool:text-red-600 transition-colors">${tool.name}</span>
+                </div>
+            `;
+        }
+
+        // Render Filter Button
+        function renderFilterButton(cat, isActive) {
+            const activeClass = isActive ? 'text-red-600 border-b-2 border-red-600 pb-1' : 'text-zinc-400 hover:text-zinc-900';
+            return `
+                <button onclick="setActiveCategory('${cat}')" class="whitespace-nowrap text-[10px] font-bold uppercase tracking-widest transition-all ${activeClass}">
+                    ${cat}
+                </button>
+            `;
+        }
+
+        // Render Project Card
+        function renderProjectCard(project) {
+            const tagsHtml = (project.tags || []).map(tag => `
+                <span class="text-[9px] uppercase tracking-wider bg-zinc-100 px-2 py-0.5 rounded-sm font-bold text-zinc-500 group-hover:text-red-500 transition-colors">
+                    ${tag}
+                </span>
+            `).join('');
+
+            const displayMode = project.displayMode || 'stack';
+            const hasSpine = displayMode === 'flipbook';
+            const spineHtml = hasSpine ? '<div class="absolute left-0 top-0 bottom-0 w-6 bg-gradient-to-r from-black/10 via-black/5 to-transparent z-10"></div>' : '';
+
+            // Icons based on displayMode
+            let iconHtml = '';
+            switch (displayMode) {
+                case 'pdf':
+                    iconHtml = '<div class="bg-red-600 p-1.5 rounded-full shadow-lg text-white"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div>';
+                    break;
+                case 'instagram':
+                    iconHtml = '<div class="bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-600 p-1.5 rounded-full shadow-lg text-white"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></div>';
+                    break;
+                case 'flipbook':
+                    iconHtml = '<div class="bg-white/90 p-1.5 rounded-full shadow-lg text-amber-600"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg></div>';
+                    break;
+                default: // stack
+                    iconHtml = '<div class="bg-white/90 p-1.5 rounded-full shadow-lg text-blue-600"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg></div>';
+            }
+
+            return `
+                <div class="group cursor-pointer" onclick="openModal(${project.id})">
+                    <div class="relative aspect-[3/4] overflow-hidden mb-6 rounded-sm transition-all duration-700 ease-out group-hover:shadow-2xl group-hover:-translate-y-2 shadow-sm bg-white ring-1 ring-black/5">
+                        ${spineHtml}
+                        <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-white/10 z-10 opacity-0 group-hover:opacity-100 duration-700"></div>
+                        <img src="${project.image}" alt="${project.title}" class="w-full h-full object-cover transition-all duration-1000 ease-out grayscale-[0.3] group-hover:grayscale-0 group-hover:scale-110" />
+                        <div class="absolute top-4 left-4 z-20"><div class="w-1.5 h-1.5 bg-red-600 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-500 scale-0 group-hover:scale-100"></div></div>
+                        <div class="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity flex gap-2 z-20">
+                            ${iconHtml}
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-end border-b border-transparent group-hover:border-red-200 pb-2 transition-all px-1">
+                        <div>
+                            <div class="flex gap-2 mb-2">
+                                ${tagsHtml}
+                            </div>
+                            <h3 class="text-xl font-bold tracking-tight group-hover:text-red-600 transition-colors">${project.title}</h3>
+                            <p class="text-sm text-zinc-400 font-medium">${project.subtitle}</p>
+                        </div>
+                        <div class="w-6 h-6 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 group-hover:text-red-600 transition-all">
+                            <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Set Active Category
+        function setActiveCategory(cat) {
+            activeCategory = cat;
+            renderFilters();
+            renderProjects();
+        }
+
+        // Render Filters
+        function renderFilters() {
+            const container = document.getElementById('filter-buttons');
+            container.innerHTML = categories.map(cat => renderFilterButton(cat, cat === activeCategory)).join('');
+        }
+
+        // Render Projects
+        function renderProjects() {
+            const container = document.getElementById('projects-grid');
+            const filtered = activeCategory === '全部' ? projects : projects.filter(p => p.category === activeCategory);
+            container.innerHTML = filtered.map(p => renderProjectCard(p)).join('');
+        }
+
+        // ============ Viewer State ============
+        let igCurrentIndex = 0;
+        let igImages = [];
+        let flipCurrentSpread = 0;
+        let flipImages = [];
+
+        // ============ Stack Viewer ============
+        function renderStackViewer(project) {
+            const images = project.gallery || [];
+            return `
+                <div class="w-full space-y-12 py-4">
+                    ${images.map((img, idx) => `
+                        <div class="group rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:scale-[1.01]">
+                            <img src="${img}" alt="Work ${idx + 1}" class="w-full h-auto">
+                        </div>
+                    `).join('')}
+                    <div class="py-20 text-center">
+                        <p class="text-[10px] font-black uppercase tracking-[0.5em] text-zinc-300">End of Gallery</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ============ Instagram Viewer ============
+        function renderInstagramViewer(project) {
+            const images = project.gallery || [];
+            const aspectClass = project.igAspectRatio === 'portrait' ? 'aspect-[3/4]' : 'aspect-square';
+            igImages = images;
+            igCurrentIndex = 0;
+            return `
+                <div class="w-full flex justify-center py-8">
+                    <div class="w-full max-w-md bg-white rounded-xl overflow-hidden shadow-2xl border border-zinc-100">
+                        <div class="flex items-center justify-between p-3 border-b border-zinc-100">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-600 p-0.5">
+                                    <div class="w-full h-full bg-white rounded-full"></div>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-semibold text-zinc-900">${profile?.nameEn || 'designer'}</p>
+                                    <p class="text-xs text-zinc-500">${profile?.location || 'Taiwan'}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="relative ${aspectClass} bg-zinc-100">
+                            <img id="ig-current-image" src="${images[0] || ''}" alt="Slide" class="w-full h-full object-cover">
+                            ${images.length > 1 ? `
+                                <button onclick="igPrev()" class="absolute left-2 top-1/2 -translate-y-1/2 p-1.5 bg-white/90 rounded-full shadow-lg hover:bg-white">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                                </button>
+                                <button onclick="igNext()" class="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 bg-white/90 rounded-full shadow-lg hover:bg-white">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                </button>
+                                <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5" id="ig-dots">
+                                    ${images.map((_, i) => `<button onclick="igGoTo(${i})" class="ig-dot rounded-full transition-all ${i === 0 ? 'w-2 h-2 bg-red-600 scale-125' : 'w-1.5 h-1.5 bg-white/60 hover:bg-white'}"></button>`).join('')}
+                                </div>
+                            ` : ''}
+                        </div>
+                        <div class="p-3">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-4">
+                                    <svg class="w-6 h-6 cursor-pointer hover:text-red-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                                    <svg class="w-6 h-6 cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                                    <svg class="w-6 h-6 cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
+                                </div>
+                                <svg class="w-6 h-6 cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
+                            </div>
+                            <p class="text-sm"><span class="font-semibold">${profile?.nameEn || 'designer'}</span> ${project.title || ''}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function igGoTo(index) {
+            igCurrentIndex = index;
+            document.getElementById('ig-current-image').src = igImages[index];
+            updateIgDots();
+        }
+
+        function igNext() {
+            igCurrentIndex = (igCurrentIndex + 1) % igImages.length;
+            document.getElementById('ig-current-image').src = igImages[igCurrentIndex];
+            updateIgDots();
+        }
+
+        function igPrev() {
+            igCurrentIndex = (igCurrentIndex - 1 + igImages.length) % igImages.length;
+            document.getElementById('ig-current-image').src = igImages[igCurrentIndex];
+            updateIgDots();
+        }
+
+        function updateIgDots() {
+            document.querySelectorAll('.ig-dot').forEach((dot, i) => {
+                if (i === igCurrentIndex) {
+                    dot.className = 'ig-dot rounded-full transition-all w-2 h-2 bg-red-600 scale-125';
+                } else {
+                    dot.className = 'ig-dot rounded-full transition-all w-1.5 h-1.5 bg-white/60 hover:bg-white';
+                }
+            });
+        }
+
+        // ============ FlipBook Viewer ============
+        function renderFlipBookViewer(project) {
+            const images = project.gallery || [];
+            flipImages = images;
+            flipCurrentSpread = 0;
+            return `
+                <div class="w-full py-8">
+                    <div class="perspective-1500 relative">
+                        <div class="flex justify-center items-center gap-0">
+                            <div class="relative w-[45%] aspect-[3/4] bg-white shadow-2xl overflow-hidden rounded-l-sm">
+                                <div class="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-black/10 to-transparent z-10"></div>
+                                <img id="flip-left-page" src="${images[0] || ''}" alt="Left Page" class="w-full h-full object-cover">
+                            </div>
+                            <div class="w-2 h-full bg-gradient-to-r from-zinc-300 via-zinc-200 to-zinc-300 shadow-inner"></div>
+                            <div class="relative w-[45%] aspect-[3/4] bg-white shadow-2xl overflow-hidden rounded-r-sm">
+                                <div class="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-black/10 to-transparent z-10"></div>
+                                <img id="flip-right-page" src="${images[1] || ''}" alt="Right Page" class="w-full h-full object-cover">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex justify-center items-center gap-8 mt-8">
+                        <button onclick="flipPrev()" class="p-3 bg-zinc-100 text-zinc-600 rounded-full hover:bg-zinc-200 transition-all">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                        </button>
+                        <span id="flip-page-indicator" class="text-zinc-500 text-sm font-medium">1 / ${Math.ceil(images.length / 2)}</span>
+                        <button onclick="flipNext()" class="p-3 bg-zinc-100 text-zinc-600 rounded-full hover:bg-zinc-200 transition-all">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function flipNext() {
+            const totalSpreads = Math.ceil(flipImages.length / 2);
+            if (flipCurrentSpread < totalSpreads - 1) {
+                flipCurrentSpread++;
+                updateFlipBook();
+            }
+        }
+
+        function flipPrev() {
+            if (flipCurrentSpread > 0) {
+                flipCurrentSpread--;
+                updateFlipBook();
+            }
+        }
+
+        function updateFlipBook() {
+            const leftIndex = flipCurrentSpread * 2;
+            const rightIndex = flipCurrentSpread * 2 + 1;
+            const totalSpreads = Math.ceil(flipImages.length / 2);
+
+            document.getElementById('flip-left-page').src = flipImages[leftIndex] || '';
+            document.getElementById('flip-right-page').src = flipImages[rightIndex] || '';
+            document.getElementById('flip-page-indicator').textContent = `${flipCurrentSpread + 1} / ${totalSpreads}`;
+        }
+
+        // ============ PDF Viewer ============
+        function renderPdfViewer(project) {
+            return `
+                <div class="w-full flex flex-col gap-4">
+                    <div class="flex-1 bg-zinc-100 rounded-sm overflow-hidden border border-zinc-200 shadow-inner relative min-h-[550px]">
+                        <iframe src="${project.pdfUrl || ''}" class="w-full h-full border-none" title="PDF Preview"></iframe>
+                    </div>
+                    <div class="flex items-center justify-between p-4 bg-zinc-50 border border-zinc-100 rounded-sm">
+                        <div class="flex items-center gap-3">
+                            <div class="p-2 bg-red-100 text-red-600 rounded-sm animate-breathe">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                            </div>
+                            <div>
+                                <p class="text-xs font-black uppercase text-zinc-900">Interactive Mode</p>
+                                <p class="text-[10px] text-zinc-400">您可以直接在視窗中滾動閱讀完整內容</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <a href="${project.pdfUrl || ''}" target="_blank" class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-zinc-600 bg-zinc-100 rounded-lg hover:bg-zinc-200 transition-all">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                                開新視窗
+                            </a>
+                            <a href="${project.pdfUrl || ''}" download class="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-red-700 transition-all">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                                下載 PDF
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ============ Modal Functions ============
+        function openModal(projectId) {
+            const project = projects.find(p => p.id === projectId);
+            if (!project) return;
+
+            document.getElementById('modal-category').textContent = `Project Detail / ${project.category}`;
+            document.getElementById('modal-title').textContent = project.title;
+            document.getElementById('modal-subtitle').textContent = project.subtitle;
+
+            // Set description based on display mode
+            const displayMode = project.displayMode || 'stack';
+            let desc = '';
+            switch (displayMode) {
+                case 'pdf':
+                    desc = '完整 PDF 文件預覽模式，可直接滾動閱讀。';
+                    break;
+                case 'instagram':
+                    desc = '社群風格輪播展示，模擬 Instagram 貼文體驗。';
+                    break;
+                case 'flipbook':
+                    desc = '3D 翻書互動模式，模擬實體雜誌翻頁效果。';
+                    break;
+                default:
+                    desc = '純淨並排展示，完整呈現設計細節與排版比例。';
+            }
+            document.getElementById('modal-desc').textContent = desc;
+
+            // Render content based on displayMode
+            const contentContainer = document.getElementById('modal-content');
+            let content = '';
+
+            switch (displayMode) {
+                case 'pdf':
+                    content = renderPdfViewer(project);
+                    break;
+                case 'instagram':
+                    content = renderInstagramViewer(project);
+                    break;
+                case 'flipbook':
+                    content = renderFlipBookViewer(project);
+                    break;
+                default:
+                    content = renderStackViewer(project);
+            }
+
+            contentContainer.innerHTML = content;
+
+            const modal = document.getElementById('project-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('project-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            document.body.style.overflow = '';
+        }
+
+        // Close modal on backdrop click
+        document.getElementById('project-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Close modal on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        // Render Profile
+        function renderProfile() {
+            // Update profile display elements
+            const nameEl = document.getElementById('profile-name-display');
+            const nameEnEl = document.getElementById('profile-nameEn-display');
+            const titleEl = document.getElementById('profile-title-display');
+            const locationEl = document.getElementById('profile-location-display');
+            const introEl = document.getElementById('profile-intro-display');
+            const emailDisplayEl = document.getElementById('profile-email-display');
+            const emailLinkEl = document.getElementById('profile-email-link');
+            const instagramLinkEl = document.getElementById('profile-instagram-link');
+            const contactEmailDisplayEl = document.getElementById('contact-email-display');
+            const contactEmailLinkEl = document.getElementById('contact-email-link');
+
+            if (nameEl) nameEl.textContent = profile.name || '王郁平';
+            if (nameEnEl) nameEnEl.textContent = profile.nameEn || 'YuPing Wang';
+            if (titleEl && profile.title) {
+                const parts = profile.title.split('/').map(p => p.trim());
+                titleEl.innerHTML = parts.join(' <span class="w-1 h-1 bg-red-500 rounded-full"></span> ');
+            }
+            if (locationEl) locationEl.textContent = profile.location || 'Taipei, Taiwan';
+            if (introEl) introEl.textContent = profile.intro || '';
+            if (emailDisplayEl) emailDisplayEl.textContent = profile.email || 'phinainaina@gmail.com';
+            if (emailLinkEl) emailLinkEl.href = 'mailto:' + (profile.email || 'phinainaina@gmail.com');
+            if (instagramLinkEl && profile.instagram) instagramLinkEl.href = profile.instagram;
+            if (contactEmailDisplayEl) contactEmailDisplayEl.textContent = profile.email || 'phinainaina@gmail.com';
+            if (contactEmailLinkEl) contactEmailLinkEl.href = 'mailto:' + (profile.email || 'phinainaina@gmail.com');
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Render Profile from localStorage
+            renderProfile();
+
+            // Render Experience Timeline
+            const expContainer = document.getElementById('experience-timeline');
+            expContainer.innerHTML = experience.map((exp, idx) => renderTimelineItem(exp, idx === experience.length - 1)).join('');
+
+            // Render Education Timeline
+            const eduContainer = document.getElementById('education-timeline');
+            eduContainer.innerHTML = education.map((edu, idx) => renderTimelineItem(edu, idx === education.length - 1)).join('');
+
+            // Render Skills List
+            const skillsContainer = document.getElementById('skills-list');
+            skillsContainer.innerHTML = skills.map(skill => renderSkillItem(skill)).join('');
+
+            // Render Tools List
+            const toolsContainer = document.getElementById('tools-list');
+            toolsContainer.innerHTML = softwareTools.map(tool => renderToolItem(tool)).join('');
+
+            // Render Filters and Projects
+            renderFilters();
+            renderProjects();
+        });
+    </script>
+
+</body>
+</html>
