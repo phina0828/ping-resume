@@ -73,6 +73,13 @@
         <div class="grid lg:grid-cols-12 gap-12 lg:gap-24">
             <!-- Left Column -->
             <div class="lg:col-span-4 space-y-8">
+                <!-- Profile Photo -->
+                <div id="profile-photo-container" class="w-32 h-32 rounded-full overflow-hidden border-4 border-zinc-100 shadow-lg bg-zinc-100">
+                    <img id="profile-photo-display" src="" alt="Profile Photo" class="w-full h-full object-cover hidden" onerror="this.classList.add('hidden')">
+                    <div id="profile-photo-placeholder" class="w-full h-full flex items-center justify-center text-zinc-300">
+                        <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                    </div>
+                </div>
                 <div>
                     <p id="profile-title-display" class="text-xs font-bold uppercase tracking-[0.3em] text-zinc-400 mb-4 flex items-center gap-2">
                         Graphic Designer <span class="w-1 h-1 bg-red-500 rounded-full"></span> Visual Artist
@@ -826,6 +833,8 @@
         // Render Profile
         function renderProfile() {
             // Update profile display elements
+            const photoEl = document.getElementById('profile-photo-display');
+            const photoPlaceholder = document.getElementById('profile-photo-placeholder');
             const nameEl = document.getElementById('profile-name-display');
             const nameEnEl = document.getElementById('profile-nameEn-display');
             const titleEl = document.getElementById('profile-title-display');
@@ -836,6 +845,16 @@
             const instagramLinkEl = document.getElementById('profile-instagram-link');
             const contactEmailDisplayEl = document.getElementById('contact-email-display');
             const contactEmailLinkEl = document.getElementById('contact-email-link');
+
+            // Profile photo
+            if (photoEl && profile.photo && profile.photo.trim() !== '') {
+                photoEl.src = profile.photo;
+                photoEl.classList.remove('hidden');
+                if (photoPlaceholder) photoPlaceholder.classList.add('hidden');
+            } else {
+                if (photoEl) photoEl.classList.add('hidden');
+                if (photoPlaceholder) photoPlaceholder.classList.remove('hidden');
+            }
 
             if (nameEl) nameEl.textContent = profile.name || '王郁平';
             if (nameEnEl) nameEnEl.textContent = profile.nameEn || 'YuPing Wang';
