@@ -72,7 +72,11 @@
     <header id="about" class="pt-32 pb-20 px-6 max-w-7xl mx-auto border-b border-zinc-100">
         <div class="grid lg:grid-cols-12 gap-12 lg:gap-24">
             <!-- Left Column -->
-            <div class="lg:col-span-4 space-y-8">
+            <div class="lg:col-span-4 space-y-6">
+                <!-- Title -->
+                <p id="profile-title-display" class="text-xs font-bold uppercase tracking-[0.3em] text-zinc-400 flex items-center gap-2">
+                    Graphic Designer <span class="w-1 h-1 bg-red-500 rounded-full"></span> Visual Artist
+                </p>
                 <!-- Profile Photo -->
                 <div id="profile-photo-container" class="w-32 h-32 rounded-full overflow-hidden border-4 border-zinc-100 shadow-lg bg-zinc-100">
                     <img id="profile-photo-display" src="" alt="Profile Photo" class="w-full h-full object-cover hidden" onerror="this.classList.add('hidden')">
@@ -81,9 +85,6 @@
                     </div>
                 </div>
                 <div>
-                    <p id="profile-title-display" class="text-xs font-bold uppercase tracking-[0.3em] text-zinc-400 mb-4 flex items-center gap-2">
-                        Graphic Designer <span class="w-1 h-1 bg-red-500 rounded-full"></span> Visual Artist
-                    </p>
                     <h1 class="text-6xl md:text-7xl font-black tracking-tighter leading-none mb-6 relative">
                         <span id="profile-name-display">王郁平</span><br /><span id="profile-nameEn-display" class="text-4xl md:text-5xl">YuPing Wang</span>
                         <span class="absolute -right-4 bottom-2 w-3 h-3 bg-red-600 rounded-full animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.5)]"></span>
