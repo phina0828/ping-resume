@@ -25,6 +25,26 @@
             50% { opacity: 1; transform: scale(1.1); }
         }
         .animate-breathe { animation: breathe 2s ease-in-out infinite; }
+
+        /* Page Flip Animation */
+        @keyframes flipNext {
+            0% { transform: perspective(1500px) rotateY(0deg); }
+            50% { transform: perspective(1500px) rotateY(-90deg); }
+            100% { transform: perspective(1500px) rotateY(0deg); }
+        }
+        @keyframes flipPrev {
+            0% { transform: perspective(1500px) rotateY(0deg); }
+            50% { transform: perspective(1500px) rotateY(90deg); }
+            100% { transform: perspective(1500px) rotateY(0deg); }
+        }
+        .flip-next {
+            animation: flipNext 0.6s ease-in-out;
+            transform-style: preserve-3d;
+        }
+        .flip-prev {
+            animation: flipPrev 0.6s ease-in-out;
+            transform-style: preserve-3d;
+        }
     </style>
 </head>
 <body class="min-h-screen bg-[#FDFDFD] text-zinc-900 selection:bg-red-500 selection:text-white antialiased">
@@ -708,18 +728,50 @@
             }
         }
 
+        let isFlipping = false;
+
         function flipNext() {
             const totalSpreads = flipBookMode === 'spread' ? flipImages.length : Math.ceil(flipImages.length / 2);
-            if (flipCurrentSpread < totalSpreads - 1) {
-                flipCurrentSpread++;
-                updateFlipBook();
+            if (flipCurrentSpread < totalSpreads - 1 && !isFlipping) {
+                isFlipping = true;
+                const container = document.getElementById('flip-book-container');
+                if (container) {
+                    container.classList.add('flip-next');
+                    setTimeout(() => {
+                        flipCurrentSpread++;
+                        updateFlipBook();
+                    }, 300); // Update at midpoint of animation
+                    setTimeout(() => {
+                        container.classList.remove('flip-next');
+                        isFlipping = false;
+                    }, 600); // Animation duration
+                } else {
+                    flipCurrentSpread++;
+                    updateFlipBook();
+                    isFlipping = false;
+                }
             }
         }
 
         function flipPrev() {
-            if (flipCurrentSpread > 0) {
-                flipCurrentSpread--;
-                updateFlipBook();
+            if (flipCurrentSpread > 0 && !isFlipping) {
+                isFlipping = true;
+                const container = document.getElementById('flip-book-container');
+                if (container) {
+                    container.classList.add('flip-prev');
+                    setTimeout(() => {
+                        flipCurrentSpread--;
+                        updateFlipBook();
+                    }, 300); // Update at midpoint of animation
+                    setTimeout(() => {
+                        container.classList.remove('flip-prev');
+                        isFlipping = false;
+                    }, 600); // Animation duration
+                } else {
+                    flipCurrentSpread--;
+                    updateFlipBook();
+                    isFlipping = false;
+                }
             }
         }
 
