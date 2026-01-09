@@ -660,11 +660,25 @@
         }
 
         // ============ PDF Viewer ============
+        function getPdfEmbedUrl(url) {
+            if (!url) return '';
+            // Google Drive: convert to preview URL
+            if (url.includes('drive.google.com')) {
+                const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+                if (match) {
+                    return `https://drive.google.com/file/d/${match[1]}/preview`;
+                }
+            }
+            // Other URLs: use Google Docs Viewer
+            return `https://docs.google.com/viewer?url=${encodeURIComponent(url)}&embedded=true`;
+        }
+
         function renderPdfViewer(project) {
+            const embedUrl = getPdfEmbedUrl(project.pdfUrl);
             return `
                 <div class="w-full flex flex-col gap-4">
                     <div class="flex-1 bg-zinc-100 rounded-sm overflow-hidden border border-zinc-200 shadow-inner relative min-h-[550px]">
-                        <iframe src="${project.pdfUrl || ''}" class="w-full h-full border-none" title="PDF Preview"></iframe>
+                        <iframe src="${embedUrl}" class="w-full h-full border-none" title="PDF Preview" allow="autoplay"></iframe>
                     </div>
                     <div class="flex items-center justify-between p-4 bg-zinc-50 border border-zinc-100 rounded-sm">
                         <div class="flex items-center gap-3">
