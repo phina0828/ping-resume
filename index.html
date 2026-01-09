@@ -700,13 +700,28 @@
         }
 
         function renderVideoViewer(project) {
-            const embedUrl = getInstagramEmbedUrl(project.videoUrl);
             return `
                 <div class="w-full flex flex-col gap-4">
                     <div class="flex justify-center">
-                        <div class="w-full max-w-md aspect-[9/16] bg-zinc-900 rounded-sm overflow-hidden border border-zinc-200 shadow-inner">
-                            <iframe src="${embedUrl}" class="w-full h-full border-none" title="Video Preview" allowfullscreen></iframe>
-                        </div>
+                        <a href="${project.videoUrl || ''}" target="_blank" class="block w-full max-w-md aspect-[9/16] bg-zinc-900 rounded-sm overflow-hidden border border-zinc-200 shadow-inner relative group cursor-pointer">
+                            ${project.image ? `<img src="${project.image}" class="w-full h-full object-cover">` : '<div class="w-full h-full bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400"></div>'}
+                            <div class="absolute inset-0 bg-black/30 flex items-center justify-center group-hover:bg-black/50 transition-all">
+                                <div class="w-20 h-20 bg-white/90 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
+                                    <svg class="w-10 h-10 text-zinc-900 ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                </div>
+                            </div>
+                            <div class="absolute bottom-4 left-4 right-4 flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-600 p-0.5">
+                                    <div class="w-full h-full bg-white rounded-full flex items-center justify-center">
+                                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="18" cy="6" r="1.5" fill="currentColor"/></svg>
+                                    </div>
+                                </div>
+                                <div class="flex-1 text-white">
+                                    <p class="text-sm font-bold drop-shadow-lg">${project.title || '影片'}</p>
+                                    <p class="text-xs opacity-80 drop-shadow-lg">點擊觀看 Instagram 影片</p>
+                                </div>
+                            </div>
+                        </a>
                     </div>
                     <div class="flex items-center justify-between p-4 bg-zinc-50 border border-zinc-100 rounded-sm">
                         <div class="flex items-center gap-3">
@@ -715,7 +730,7 @@
                             </div>
                             <div>
                                 <p class="text-xs font-black uppercase text-zinc-900">Video Mode</p>
-                                <p class="text-[10px] text-zinc-400">Instagram 嵌入式影片播放</p>
+                                <p class="text-[10px] text-zinc-400">點擊上方影片前往 Instagram 觀看</p>
                             </div>
                         </div>
                         <a href="${project.videoUrl || ''}" target="_blank" class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-zinc-600 bg-zinc-100 rounded-lg hover:bg-zinc-200 transition-all">
