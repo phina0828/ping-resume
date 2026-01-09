@@ -612,22 +612,40 @@
         }
 
         // ============ FlipBook Viewer ============
+        let flipBookMode = 'single';
+
         function renderFlipBookViewer(project) {
             const images = project.gallery || [];
+            const isSpreadMode = project.flipBookMode === 'spread';
             flipImages = images;
             flipCurrentSpread = 0;
+            flipBookMode = project.flipBookMode || 'single';
+            const totalPages = isSpreadMode ? images.length : Math.ceil(images.length / 2);
+
             return `
                 <div class="w-full py-8">
                     <div class="perspective-1500 relative">
                         <div class="flex justify-center items-center gap-0">
-                            <div class="relative w-[45%] aspect-[3/4] bg-white shadow-2xl overflow-hidden rounded-l-sm">
-                                <div class="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-black/10 to-transparent z-10"></div>
-                                <img id="flip-left-page" src="${images[0] || ''}" alt="Left Page" class="w-full h-full object-cover">
+                            <div class="relative w-[45%] aspect-[3/4] bg-white shadow-2xl overflow-hidden ${isSpreadMode ? '' : 'rounded-l-sm'}">
+                                <div class="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-black/20 via-black/5 to-transparent z-10"></div>
+                                ${isSpreadMode ? `
+                                    <div id="flip-left-page" class="w-[200%] h-full" style="margin-left: 0;">
+                                        <img src="${images[0] || ''}" alt="Left Page" class="w-full h-full object-cover object-left">
+                                    </div>
+                                ` : `
+                                    <img id="flip-left-page" src="${images[0] || ''}" alt="Left Page" class="w-full h-full object-cover">
+                                `}
                             </div>
-                            <div class="w-2 h-full bg-gradient-to-r from-zinc-300 via-zinc-200 to-zinc-300 shadow-inner"></div>
-                            <div class="relative w-[45%] aspect-[3/4] bg-white shadow-2xl overflow-hidden rounded-r-sm">
-                                <div class="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-black/10 to-transparent z-10"></div>
-                                <img id="flip-right-page" src="${images[1] || ''}" alt="Right Page" class="w-full h-full object-cover">
+                            ${isSpreadMode ? '' : '<div class="w-2 h-full bg-gradient-to-r from-zinc-300 via-zinc-200 to-zinc-300 shadow-inner"></div>'}
+                            <div class="relative w-[45%] aspect-[3/4] bg-white shadow-2xl overflow-hidden ${isSpreadMode ? '' : 'rounded-r-sm'}">
+                                <div class="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-black/20 via-black/5 to-transparent z-10"></div>
+                                ${isSpreadMode ? `
+                                    <div id="flip-right-page" class="w-[200%] h-full" style="margin-left: -100%;">
+                                        <img src="${images[0] || ''}" alt="Right Page" class="w-full h-full object-cover object-right">
+                                    </div>
+                                ` : `
+                                    <img id="flip-right-page" src="${images[1] || ''}" alt="Right Page" class="w-full h-full object-cover">
+                                `}
                             </div>
                         </div>
                     </div>
@@ -635,7 +653,7 @@
                         <button onclick="flipPrev()" class="p-3 bg-zinc-100 text-zinc-600 rounded-full hover:bg-zinc-200 transition-all">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
                         </button>
-                        <span id="flip-page-indicator" class="text-zinc-500 text-sm font-medium">1 / ${Math.ceil(images.length / 2)}</span>
+                        <span id="flip-page-indicator" class="text-zinc-500 text-sm font-medium">1 / ${totalPages}</span>
                         <button onclick="flipNext()" class="p-3 bg-zinc-100 text-zinc-600 rounded-full hover:bg-zinc-200 transition-all">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                         </button>
@@ -645,7 +663,7 @@
         }
 
         function flipNext() {
-            const totalSpreads = Math.ceil(flipImages.length / 2);
+            const totalSpreads = flipBookMode === 'spread' ? flipImages.length : Math.ceil(flipImages.length / 2);
             if (flipCurrentSpread < totalSpreads - 1) {
                 flipCurrentSpread++;
                 updateFlipBook();
@@ -660,12 +678,31 @@
         }
 
         function updateFlipBook() {
-            const leftIndex = flipCurrentSpread * 2;
-            const rightIndex = flipCurrentSpread * 2 + 1;
-            const totalSpreads = Math.ceil(flipImages.length / 2);
+            const totalSpreads = flipBookMode === 'spread' ? flipImages.length : Math.ceil(flipImages.length / 2);
 
-            document.getElementById('flip-left-page').src = flipImages[leftIndex] || '';
-            document.getElementById('flip-right-page').src = flipImages[rightIndex] || '';
+            if (flipBookMode === 'spread') {
+                // Spread mode: each image is a full spread
+                const currentImage = flipImages[flipCurrentSpread] || '';
+                const leftPage = document.getElementById('flip-left-page');
+                const rightPage = document.getElementById('flip-right-page');
+
+                if (leftPage) {
+                    const leftImg = leftPage.querySelector('img');
+                    if (leftImg) leftImg.src = currentImage;
+                }
+                if (rightPage) {
+                    const rightImg = rightPage.querySelector('img');
+                    if (rightImg) rightImg.src = currentImage;
+                }
+            } else {
+                // Single mode: two images per spread
+                const leftIndex = flipCurrentSpread * 2;
+                const rightIndex = flipCurrentSpread * 2 + 1;
+
+                document.getElementById('flip-left-page').src = flipImages[leftIndex] || '';
+                document.getElementById('flip-right-page').src = flipImages[rightIndex] || '';
+            }
+
             document.getElementById('flip-page-indicator').textContent = `${flipCurrentSpread + 1} / ${totalSpreads}`;
         }
 

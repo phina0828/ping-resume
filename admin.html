@@ -820,6 +820,32 @@
                         </div>
                     </div>
 
+                    <div id="flipbook-mode-section" class="${project.displayMode === 'flipbook' ? '' : 'hidden'}">
+                        <label class="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-2">翻書模式</label>
+                        <div class="flex gap-4">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="radio" name="flipBookMode" value="single" ${(project.flipBookMode || 'single') === 'single' ? 'checked' : ''} class="w-4 h-4 text-red-600 focus:ring-red-500">
+                                <span class="flex items-center gap-2 text-sm text-zinc-700">
+                                    <span class="flex gap-0.5">
+                                        <span class="w-4 h-6 border-2 border-zinc-300 rounded-l"></span>
+                                        <span class="w-4 h-6 border-2 border-zinc-300 rounded-r"></span>
+                                    </span>
+                                    單頁模式
+                                </span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="radio" name="flipBookMode" value="spread" ${project.flipBookMode === 'spread' ? 'checked' : ''} class="w-4 h-4 text-red-600 focus:ring-red-500">
+                                <span class="flex items-center gap-2 text-sm text-zinc-700">
+                                    <span class="w-10 h-6 border-2 border-zinc-300 rounded relative">
+                                        <span class="absolute left-1/2 top-0 bottom-0 w-px bg-zinc-300"></span>
+                                    </span>
+                                    跨頁模式
+                                </span>
+                            </label>
+                        </div>
+                        <p class="mt-2 text-xs text-zinc-400">跨頁模式：每張圖片包含左右兩頁，會自動分割成翻書效果</p>
+                    </div>
+
                     <div>
                         <label class="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-2">標籤（逗號分隔）</label>
                         <input type="text" id="edit-tags" value="${(project.tags || []).join(', ')}" class="w-full px-4 py-3 border border-zinc-200 rounded-lg focus:ring-2 focus:ring-red-500" placeholder="標籤1, 標籤2">
@@ -877,6 +903,7 @@
             document.getElementById('video-section').classList.toggle('hidden', mode !== 'video');
             document.getElementById('gallery-section').classList.toggle('hidden', mode === 'pdf' || mode === 'video');
             document.getElementById('ig-aspect-section').classList.toggle('hidden', mode !== 'instagram');
+            document.getElementById('flipbook-mode-section').classList.toggle('hidden', mode !== 'flipbook');
         }
 
         function updateImagePreview() {
@@ -953,6 +980,9 @@
             // Save IG aspect ratio
             const igAspectRadio = document.querySelector('input[name="igAspectRatio"]:checked');
             project.igAspectRatio = igAspectRadio ? igAspectRadio.value : 'square';
+            // Save flip book mode
+            const flipBookModeRadio = document.querySelector('input[name="flipBookMode"]:checked');
+            project.flipBookMode = flipBookModeRadio ? flipBookModeRadio.value : 'single';
 
             closeProjectModal();
             renderProjects();
@@ -972,6 +1002,9 @@
             // Save IG aspect ratio
             const igAspectRadio = document.querySelector('input[name="igAspectRatio"]:checked');
             project.igAspectRatio = igAspectRadio ? igAspectRadio.value : 'square';
+            // Save flip book mode
+            const flipBookModeRadio = document.querySelector('input[name="flipBookMode"]:checked');
+            project.flipBookMode = flipBookModeRadio ? flipBookModeRadio.value : 'single';
 
             openPreview(currentEditingProject);
         }
@@ -1006,7 +1039,7 @@
 
             // Initialize viewer-specific JS
             if (project.displayMode === 'flipbook') {
-                initFlipBook(project.gallery || []);
+                initFlipBook(project.gallery || [], project.flipBookMode || 'single');
             } else if (project.displayMode === 'instagram') {
                 initInstagramCarousel(project.gallery || []);
             }
@@ -1134,6 +1167,13 @@
         // 3D Flip Book Viewer
         function renderFlipBookViewer(project) {
             const images = project.gallery || [];
+            const isSpreadMode = project.flipBookMode === 'spread';
+            const totalPages = isSpreadMode ? images.length : Math.ceil(images.length / 2);
+
+            // For spread mode, use object-position to show left/right halves
+            const leftPageStyle = isSpreadMode ? 'object-position: left center; object-fit: cover;' : '';
+            const rightPageStyle = isSpreadMode ? 'object-position: right center; object-fit: cover;' : '';
+
             return `
                 <div class="fixed inset-0 bg-black/90 flex items-center justify-center p-4">
                     <button onclick="closePreview()" class="absolute top-6 right-6 p-2 bg-white text-zinc-900 rounded-full hover:bg-red-600 hover:text-white transition-all z-50">
@@ -1143,13 +1183,25 @@
                         <div class="perspective-1500 relative">
                             <div class="flex justify-center items-center gap-0">
                                 <div class="relative w-[45%] aspect-[3/4] bg-white shadow-2xl overflow-hidden">
-                                    <div class="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-black/10 to-transparent z-10"></div>
-                                    <img id="flip-left-page" src="${images[0] || ''}" alt="Left Page" class="w-full h-full object-cover">
+                                    <div class="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-black/20 via-black/5 to-transparent z-10"></div>
+                                    ${isSpreadMode ? `
+                                        <div id="flip-left-page" class="w-[200%] h-full" style="margin-left: 0;">
+                                            <img src="${images[0] || ''}" alt="Left Page" class="w-full h-full object-cover object-left">
+                                        </div>
+                                    ` : `
+                                        <img id="flip-left-page" src="${images[0] || ''}" alt="Left Page" class="w-full h-full object-cover">
+                                    `}
                                 </div>
-                                <div class="w-4 h-full bg-gradient-to-r from-zinc-300 via-zinc-200 to-zinc-300 shadow-inner"></div>
+                                ${isSpreadMode ? '' : '<div class="w-4 h-full bg-gradient-to-r from-zinc-300 via-zinc-200 to-zinc-300 shadow-inner"></div>'}
                                 <div class="relative w-[45%] aspect-[3/4] bg-white shadow-2xl overflow-hidden">
-                                    <div class="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-black/10 to-transparent z-10"></div>
-                                    <img id="flip-right-page" src="${images[1] || ''}" alt="Right Page" class="w-full h-full object-cover">
+                                    <div class="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-black/20 via-black/5 to-transparent z-10"></div>
+                                    ${isSpreadMode ? `
+                                        <div id="flip-right-page" class="w-[200%] h-full" style="margin-left: -100%;">
+                                            <img src="${images[0] || ''}" alt="Right Page" class="w-full h-full object-cover object-right">
+                                        </div>
+                                    ` : `
+                                        <img id="flip-right-page" src="${images[1] || ''}" alt="Right Page" class="w-full h-full object-cover">
+                                    `}
                                 </div>
                             </div>
                         </div>
@@ -1157,7 +1209,7 @@
                             <button onclick="flipPrev()" class="p-3 bg-white/10 text-white rounded-full hover:bg-white/20 disabled:opacity-30 transition-all">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
                             </button>
-                            <span id="flip-page-indicator" class="text-white/60 text-sm font-medium">1 / ${Math.ceil(images.length / 2)}</span>
+                            <span id="flip-page-indicator" class="text-white/60 text-sm font-medium">1 / ${totalPages}</span>
                             <button onclick="flipNext()" class="p-3 bg-white/10 text-white rounded-full hover:bg-white/20 disabled:opacity-30 transition-all">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                             </button>
@@ -1169,14 +1221,16 @@
 
         let flipCurrentSpread = 0;
         let flipImages = [];
+        let flipBookMode = 'single';
 
-        function initFlipBook(images) {
+        function initFlipBook(images, mode) {
             flipImages = images;
             flipCurrentSpread = 0;
+            flipBookMode = mode || 'single';
         }
 
         function flipNext() {
-            const totalSpreads = Math.ceil(flipImages.length / 2);
+            const totalSpreads = flipBookMode === 'spread' ? flipImages.length : Math.ceil(flipImages.length / 2);
             if (flipCurrentSpread < totalSpreads - 1) {
                 flipCurrentSpread++;
                 updateFlipBook();
@@ -1191,12 +1245,31 @@
         }
 
         function updateFlipBook() {
-            const leftIndex = flipCurrentSpread * 2;
-            const rightIndex = flipCurrentSpread * 2 + 1;
-            const totalSpreads = Math.ceil(flipImages.length / 2);
+            const totalSpreads = flipBookMode === 'spread' ? flipImages.length : Math.ceil(flipImages.length / 2);
 
-            document.getElementById('flip-left-page').src = flipImages[leftIndex] || '';
-            document.getElementById('flip-right-page').src = flipImages[rightIndex] || '';
+            if (flipBookMode === 'spread') {
+                // Spread mode: each image is a full spread
+                const currentImage = flipImages[flipCurrentSpread] || '';
+                const leftPage = document.getElementById('flip-left-page');
+                const rightPage = document.getElementById('flip-right-page');
+
+                if (leftPage) {
+                    const leftImg = leftPage.querySelector('img');
+                    if (leftImg) leftImg.src = currentImage;
+                }
+                if (rightPage) {
+                    const rightImg = rightPage.querySelector('img');
+                    if (rightImg) rightImg.src = currentImage;
+                }
+            } else {
+                // Single mode: two images per spread
+                const leftIndex = flipCurrentSpread * 2;
+                const rightIndex = flipCurrentSpread * 2 + 1;
+
+                document.getElementById('flip-left-page').src = flipImages[leftIndex] || '';
+                document.getElementById('flip-right-page').src = flipImages[rightIndex] || '';
+            }
+
             document.getElementById('flip-page-indicator').textContent = `${flipCurrentSpread + 1} / ${totalSpreads}`;
         }
 
