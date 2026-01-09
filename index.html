@@ -33,7 +33,7 @@
             width: 50%;
             height: 100%;
             transform-style: preserve-3d;
-            transition: transform 0.6s ease-in-out;
+            transition: transform 0.8s cubic-bezier(0.4, 0.0, 0.2, 1);
             z-index: 100;
         }
         .flip-page-right {
@@ -65,12 +65,25 @@
             position: absolute;
             top: 0;
             bottom: 0;
-            width: 30px;
+            width: 50px;
             pointer-events: none;
             opacity: 0;
-            transition: opacity 0.3s;
+            transition: opacity 0.4s;
         }
         .flip-page.flipping .flip-page-shadow {
+            opacity: 1;
+        }
+        /* Gradient overlay for depth */
+        .flip-page-gradient {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+        .flip-page.flipping .flip-page-gradient {
             opacity: 1;
         }
     </style>
@@ -781,6 +794,7 @@
         }
 
         let isFlipping = false;
+        const FLIP_DURATION = 800; // Match CSS transition duration
 
         function flipNext() {
             const totalSpreads = flipBookMode === 'spread' ? flipImages.length : Math.ceil(flipImages.length / 2);
@@ -795,30 +809,34 @@
                     const spreadImg = document.getElementById('flip-spread-image');
 
                     if (flipPageRight && frontImg && backImg && spreadImg) {
-                        // Set images for the flipping page
                         const currentImage = flipImages[flipCurrentSpread] || '';
                         const nextImage = flipImages[flipCurrentSpread + 1] || '';
 
+                        // Set flip page images (front = current right half, back = next left half)
                         frontImg.src = currentImage;
                         backImg.src = nextImage;
 
-                        // Show and animate the flip page
+                        // FIRST: Update background to show next page (will be revealed as page flips)
+                        spreadImg.src = nextImage;
+
+                        // Show flip page overlay (covers the right half with current image)
                         flipPageRight.classList.remove('hidden');
 
-                        // Trigger animation after a brief delay
+                        // Trigger flip animation
                         requestAnimationFrame(() => {
-                            flipPageRight.classList.add('flipping');
+                            requestAnimationFrame(() => {
+                                flipPageRight.classList.add('flipping');
+                            });
                         });
 
-                        // Update the main image and hide flip page after animation
+                        // Update state and cleanup after animation
                         setTimeout(() => {
                             flipCurrentSpread++;
-                            spreadImg.src = flipImages[flipCurrentSpread] || '';
                             document.getElementById('flip-page-indicator').textContent = `${flipCurrentSpread + 1} / ${totalSpreads}`;
                             flipPageRight.classList.remove('flipping');
                             flipPageRight.classList.add('hidden');
                             isFlipping = false;
-                        }, 600);
+                        }, FLIP_DURATION);
                     } else {
                         flipCurrentSpread++;
                         updateFlipBook();
@@ -846,30 +864,34 @@
                     const spreadImg = document.getElementById('flip-spread-image');
 
                     if (flipPageLeft && frontImg && backImg && spreadImg) {
-                        // Set images for the flipping page
                         const currentImage = flipImages[flipCurrentSpread] || '';
                         const prevImage = flipImages[flipCurrentSpread - 1] || '';
 
+                        // Set flip page images (front = current left half, back = prev right half)
                         frontImg.src = currentImage;
                         backImg.src = prevImage;
 
-                        // Show and animate the flip page
+                        // FIRST: Update background to show prev page (will be revealed as page flips)
+                        spreadImg.src = prevImage;
+
+                        // Show flip page overlay (covers the left half with current image)
                         flipPageLeft.classList.remove('hidden');
 
-                        // Trigger animation after a brief delay
+                        // Trigger flip animation
                         requestAnimationFrame(() => {
-                            flipPageLeft.classList.add('flipping');
+                            requestAnimationFrame(() => {
+                                flipPageLeft.classList.add('flipping');
+                            });
                         });
 
-                        // Update the main image and hide flip page after animation
+                        // Update state and cleanup after animation
                         setTimeout(() => {
                             flipCurrentSpread--;
-                            spreadImg.src = flipImages[flipCurrentSpread] || '';
                             document.getElementById('flip-page-indicator').textContent = `${flipCurrentSpread + 1} / ${totalSpreads}`;
                             flipPageLeft.classList.remove('flipping');
                             flipPageLeft.classList.add('hidden');
                             isFlipping = false;
-                        }, 600);
+                        }, FLIP_DURATION);
                     } else {
                         flipCurrentSpread--;
                         updateFlipBook();
