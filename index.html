@@ -26,24 +26,52 @@
         }
         .animate-breathe { animation: breathe 2s ease-in-out infinite; }
 
-        /* Page Flip Animation */
-        @keyframes flipNext {
-            0% { transform: perspective(1500px) rotateY(0deg); }
-            50% { transform: perspective(1500px) rotateY(-90deg); }
-            100% { transform: perspective(1500px) rotateY(0deg); }
-        }
-        @keyframes flipPrev {
-            0% { transform: perspective(1500px) rotateY(0deg); }
-            50% { transform: perspective(1500px) rotateY(90deg); }
-            100% { transform: perspective(1500px) rotateY(0deg); }
-        }
-        .flip-next {
-            animation: flipNext 0.6s ease-in-out;
+        /* Page Flip Animation - Single Page Turn */
+        .flip-page {
+            position: absolute;
+            top: 0;
+            width: 50%;
+            height: 100%;
             transform-style: preserve-3d;
+            transition: transform 0.6s ease-in-out;
+            z-index: 100;
         }
-        .flip-prev {
-            animation: flipPrev 0.6s ease-in-out;
-            transform-style: preserve-3d;
+        .flip-page-right {
+            right: 0;
+            transform-origin: left center;
+        }
+        .flip-page-left {
+            left: 0;
+            transform-origin: right center;
+        }
+        .flip-page-front, .flip-page-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            overflow: hidden;
+        }
+        .flip-page-back {
+            transform: rotateY(180deg);
+        }
+        .flip-page-right.flipping {
+            transform: rotateY(-180deg);
+        }
+        .flip-page-left.flipping {
+            transform: rotateY(180deg);
+        }
+        /* Page shadow during flip */
+        .flip-page-shadow {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 30px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .flip-page.flipping .flip-page-shadow {
+            opacity: 1;
         }
     </style>
 </head>
@@ -652,7 +680,7 @@
                                 <div class="absolute -bottom-4 left-4 right-4 h-8 bg-black/20 blur-xl rounded-full"></div>
 
                                 <!-- Main book wrapper -->
-                                <div class="relative bg-white rounded-sm" style="box-shadow: 0 25px 50px -12px rgba(0,0,0,0.4), 0 0 0 1px rgba(0,0,0,0.05);">
+                                <div id="flip-book-inner" class="relative bg-white rounded-sm" style="box-shadow: 0 25px 50px -12px rgba(0,0,0,0.4), 0 0 0 1px rgba(0,0,0,0.05);">
                                     <!-- Book edge (top) -->
                                     <div class="absolute -top-1 left-2 right-2 h-1 bg-gradient-to-b from-zinc-200 to-zinc-100 rounded-t-sm"></div>
                                     <!-- Book edge (bottom) -->
@@ -663,14 +691,38 @@
                                     <div class="absolute top-2 -right-1 bottom-2 w-1 bg-gradient-to-l from-zinc-300 to-zinc-100 rounded-r-sm"></div>
 
                                     <!-- Image container -->
-                                    <div class="relative overflow-hidden">
+                                    <div id="flip-image-container" class="relative overflow-hidden">
                                         <img id="flip-spread-image" src="${images[0] || ''}" alt="Spread" class="block" style="width: auto; height: auto; max-width: min(640px, 70vw); max-height: 48vh;">
 
+                                        <!-- Flipping page overlay (for next) -->
+                                        <div id="flip-page-right" class="flip-page flip-page-right hidden">
+                                            <div class="flip-page-front bg-white">
+                                                <img id="flip-page-front-img" src="" alt="" class="w-full h-full object-cover" style="object-position: right center;">
+                                                <div class="flip-page-shadow" style="right: 0; background: linear-gradient(to left, rgba(0,0,0,0.2), transparent);"></div>
+                                            </div>
+                                            <div class="flip-page-back bg-white">
+                                                <img id="flip-page-back-img" src="" alt="" class="w-full h-full object-cover" style="object-position: left center;">
+                                                <div class="flip-page-shadow" style="left: 0; background: linear-gradient(to right, rgba(0,0,0,0.2), transparent);"></div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Flipping page overlay (for prev) -->
+                                        <div id="flip-page-left" class="flip-page flip-page-left hidden">
+                                            <div class="flip-page-front bg-white">
+                                                <img id="flip-page-left-front-img" src="" alt="" class="w-full h-full object-cover" style="object-position: left center;">
+                                                <div class="flip-page-shadow" style="left: 0; background: linear-gradient(to right, rgba(0,0,0,0.2), transparent);"></div>
+                                            </div>
+                                            <div class="flip-page-back bg-white">
+                                                <img id="flip-page-left-back-img" src="" alt="" class="w-full h-full object-cover" style="object-position: right center;">
+                                                <div class="flip-page-shadow" style="right: 0; background: linear-gradient(to left, rgba(0,0,0,0.2), transparent);"></div>
+                                            </div>
+                                        </div>
+
                                         <!-- Center spine shadow -->
-                                        <div class="absolute left-1/2 top-0 bottom-0 w-8 -translate-x-1/2 pointer-events-none" style="background: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.15) 45%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.15) 55%, transparent 100%);"></div>
+                                        <div class="absolute left-1/2 top-0 bottom-0 w-8 -translate-x-1/2 pointer-events-none" style="background: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.15) 45%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.15) 55%, transparent 100%); z-index: 200;"></div>
 
                                         <!-- Center spine line -->
-                                        <div class="absolute left-1/2 top-0 bottom-0 w-px bg-black/20 -translate-x-1/2 pointer-events-none"></div>
+                                        <div class="absolute left-1/2 top-0 bottom-0 w-px bg-black/20 -translate-x-1/2 pointer-events-none" style="z-index: 200;"></div>
 
                                         <!-- Left page curl shadow -->
                                         <div class="absolute left-0 top-0 bottom-0 w-16 pointer-events-none" style="background: linear-gradient(to right, rgba(0,0,0,0.08) 0%, transparent 100%);"></div>
@@ -734,18 +786,46 @@
             const totalSpreads = flipBookMode === 'spread' ? flipImages.length : Math.ceil(flipImages.length / 2);
             if (flipCurrentSpread < totalSpreads - 1 && !isFlipping) {
                 isFlipping = true;
-                const container = document.getElementById('flip-book-container');
-                if (container) {
-                    container.classList.add('flip-next');
-                    setTimeout(() => {
+
+                if (flipBookMode === 'spread') {
+                    // Get elements
+                    const flipPageRight = document.getElementById('flip-page-right');
+                    const frontImg = document.getElementById('flip-page-front-img');
+                    const backImg = document.getElementById('flip-page-back-img');
+                    const spreadImg = document.getElementById('flip-spread-image');
+
+                    if (flipPageRight && frontImg && backImg && spreadImg) {
+                        // Set images for the flipping page
+                        const currentImage = flipImages[flipCurrentSpread] || '';
+                        const nextImage = flipImages[flipCurrentSpread + 1] || '';
+
+                        frontImg.src = currentImage;
+                        backImg.src = nextImage;
+
+                        // Show and animate the flip page
+                        flipPageRight.classList.remove('hidden');
+
+                        // Trigger animation after a brief delay
+                        requestAnimationFrame(() => {
+                            flipPageRight.classList.add('flipping');
+                        });
+
+                        // Update the main image and hide flip page after animation
+                        setTimeout(() => {
+                            flipCurrentSpread++;
+                            spreadImg.src = flipImages[flipCurrentSpread] || '';
+                            document.getElementById('flip-page-indicator').textContent = `${flipCurrentSpread + 1} / ${totalSpreads}`;
+                            flipPageRight.classList.remove('flipping');
+                            flipPageRight.classList.add('hidden');
+                            isFlipping = false;
+                        }, 600);
+                    } else {
                         flipCurrentSpread++;
                         updateFlipBook();
-                    }, 300); // Update at midpoint of animation
-                    setTimeout(() => {
-                        container.classList.remove('flip-next');
                         isFlipping = false;
-                    }, 600); // Animation duration
+                    }
                 } else {
+                    // Single mode - simple update
                     flipCurrentSpread++;
                     updateFlipBook();
                     isFlipping = false;
@@ -756,18 +836,47 @@
         function flipPrev() {
             if (flipCurrentSpread > 0 && !isFlipping) {
                 isFlipping = true;
-                const container = document.getElementById('flip-book-container');
-                if (container) {
-                    container.classList.add('flip-prev');
-                    setTimeout(() => {
+                const totalSpreads = flipBookMode === 'spread' ? flipImages.length : Math.ceil(flipImages.length / 2);
+
+                if (flipBookMode === 'spread') {
+                    // Get elements
+                    const flipPageLeft = document.getElementById('flip-page-left');
+                    const frontImg = document.getElementById('flip-page-left-front-img');
+                    const backImg = document.getElementById('flip-page-left-back-img');
+                    const spreadImg = document.getElementById('flip-spread-image');
+
+                    if (flipPageLeft && frontImg && backImg && spreadImg) {
+                        // Set images for the flipping page
+                        const currentImage = flipImages[flipCurrentSpread] || '';
+                        const prevImage = flipImages[flipCurrentSpread - 1] || '';
+
+                        frontImg.src = currentImage;
+                        backImg.src = prevImage;
+
+                        // Show and animate the flip page
+                        flipPageLeft.classList.remove('hidden');
+
+                        // Trigger animation after a brief delay
+                        requestAnimationFrame(() => {
+                            flipPageLeft.classList.add('flipping');
+                        });
+
+                        // Update the main image and hide flip page after animation
+                        setTimeout(() => {
+                            flipCurrentSpread--;
+                            spreadImg.src = flipImages[flipCurrentSpread] || '';
+                            document.getElementById('flip-page-indicator').textContent = `${flipCurrentSpread + 1} / ${totalSpreads}`;
+                            flipPageLeft.classList.remove('flipping');
+                            flipPageLeft.classList.add('hidden');
+                            isFlipping = false;
+                        }, 600);
+                    } else {
                         flipCurrentSpread--;
                         updateFlipBook();
-                    }, 300); // Update at midpoint of animation
-                    setTimeout(() => {
-                        container.classList.remove('flip-prev');
                         isFlipping = false;
-                    }, 600); // Animation duration
+                    }
                 } else {
+                    // Single mode - simple update
                     flipCurrentSpread--;
                     updateFlipBook();
                     isFlipping = false;
