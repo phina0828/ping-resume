@@ -215,7 +215,7 @@
                     <p class="text-xl text-zinc-500 mb-10 font-medium" id="modal-subtitle">Subtitle</p>
                     <div class="border-t border-zinc-100 pt-8 space-y-6">
                         <div>
-                            <h4 class="font-black mb-3 uppercase text-[10px] tracking-widest text-red-600">Project Scope</h4>
+                            <h4 class="font-black mb-3 uppercase text-[10px] tracking-widest text-red-600" id="modal-scope-title">Project Scope</h4>
                             <p class="text-zinc-600 text-sm leading-relaxed" id="modal-desc">
                                 此專案致力於在保持品牌核心精神的同時，優化其在多元載體上的視覺表現。
                             </p>
@@ -843,24 +843,29 @@
             document.getElementById('modal-title').textContent = project.title;
             document.getElementById('modal-subtitle').textContent = project.subtitle;
 
-            // Set description based on display mode
+            // Set scope title
+            document.getElementById('modal-scope-title').textContent = project.scopeTitle || 'Project Scope';
+
+            // Set description - use custom if provided, otherwise auto-generate
             const displayMode = project.displayMode || 'stack';
-            let desc = '';
-            switch (displayMode) {
-                case 'pdf':
-                    desc = '完整 PDF 文件預覽模式，可直接滾動閱讀。';
-                    break;
-                case 'instagram':
-                    desc = '社群風格輪播展示，模擬 Instagram 貼文體驗。';
-                    break;
-                case 'flipbook':
-                    desc = '3D 翻書互動模式，模擬實體雜誌翻頁效果。';
-                    break;
-                case 'video':
-                    desc = 'Instagram 影片展示，嵌入式播放體驗。';
-                    break;
-                default:
-                    desc = '純淨並排展示，完整呈現設計細節與排版比例。';
+            let desc = project.scopeDesc || '';
+            if (!desc) {
+                switch (displayMode) {
+                    case 'pdf':
+                        desc = '完整 PDF 文件預覽模式，可直接滾動閱讀。';
+                        break;
+                    case 'instagram':
+                        desc = '社群風格輪播展示，模擬 Instagram 貼文體驗。';
+                        break;
+                    case 'flipbook':
+                        desc = '3D 翻書互動模式，模擬實體雜誌翻頁效果。';
+                        break;
+                    case 'video':
+                        desc = 'Instagram 影片展示，嵌入式播放體驗。';
+                        break;
+                    default:
+                        desc = '純淨並排展示，完整呈現設計細節與排版比例。';
+                }
             }
             document.getElementById('modal-desc').textContent = desc;
 

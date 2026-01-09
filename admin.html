@@ -1058,6 +1058,17 @@
                         <input type="text" id="edit-tags" value="${(project.tags || []).join(', ')}" class="w-full px-4 py-3 border border-zinc-200 rounded-lg focus:ring-2 focus:ring-red-500" placeholder="標籤1, 標籤2">
                     </div>
 
+                    <div class="border-t border-zinc-100 pt-6">
+                        <label class="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-2">專案範圍標題</label>
+                        <input type="text" id="edit-scopeTitle" value="${project.scopeTitle || 'Project Scope'}" class="w-full px-4 py-3 border border-zinc-200 rounded-lg focus:ring-2 focus:ring-red-500" placeholder="Project Scope">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-2">專案範圍說明</label>
+                        <textarea id="edit-scopeDesc" rows="3" class="w-full px-4 py-3 border border-zinc-200 rounded-lg focus:ring-2 focus:ring-red-500" placeholder="輸入專案說明文字...">${project.scopeDesc || ''}</textarea>
+                        <p class="mt-1 text-xs text-zinc-400">留空則會依據展示模式自動產生說明文字</p>
+                    </div>
+
                     <div>
                         <label class="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-2">封面圖片網址</label>
                         <div class="flex gap-2">
@@ -1234,6 +1245,8 @@
             project.category = document.getElementById('edit-category').value;
             project.displayMode = document.getElementById('edit-displayMode').value;
             project.tags = document.getElementById('edit-tags').value.split(',').map(t => t.trim()).filter(t => t);
+            project.scopeTitle = document.getElementById('edit-scopeTitle').value || 'Project Scope';
+            project.scopeDesc = document.getElementById('edit-scopeDesc').value || '';
             project.image = document.getElementById('edit-image').value;
             project.pdfUrl = document.getElementById('edit-pdfUrl')?.value || undefined;
             project.videoUrl = document.getElementById('edit-videoUrl')?.value || undefined;
