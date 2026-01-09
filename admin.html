@@ -1093,14 +1093,23 @@
                     <div id="gallery-section" class="${isPdfMode || isVideoMode ? 'hidden' : ''}">
                         <label class="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-2">作品圖庫（${project.displayMode === 'flipbook' ? '建議偶數張' : project.displayMode === 'instagram' ? '建議 4-10 張' : '不限'}）</label>
                         <div id="gallery-list" class="space-y-2 mb-3">
-                            ${(project.gallery || []).map((url, i) => `
+                            ${(project.gallery || []).map((url, i, arr) => `
                                 <div class="flex items-center gap-2 group">
+                                    <div class="flex flex-col gap-0.5">
+                                        <button onclick="moveGalleryItem(${i}, -1)" class="p-1 text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 rounded transition-all ${i === 0 ? 'opacity-30 cursor-not-allowed' : ''}" ${i === 0 ? 'disabled' : ''} title="上移">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
+                                        </button>
+                                        <button onclick="moveGalleryItem(${i}, 1)" class="p-1 text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 rounded transition-all ${i === arr.length - 1 ? 'opacity-30 cursor-not-allowed' : ''}" ${i === arr.length - 1 ? 'disabled' : ''} title="下移">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                        </button>
+                                    </div>
+                                    <span class="text-xs text-zinc-400 font-medium w-5 text-center">${i + 1}</span>
                                     ${url ? `<img src="${url}" class="w-16 h-16 object-cover rounded-lg border border-zinc-200">` : '<div class="w-16 h-16 bg-zinc-100 rounded-lg flex items-center justify-center text-zinc-300"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></div>'}
                                     <input type="url" value="${url}" onchange="updateGalleryItem(${i}, this.value)" class="flex-1 px-3 py-2 border border-zinc-200 rounded-lg text-sm focus:ring-2 focus:ring-red-500" placeholder="圖片網址">
                                     <button type="button" onclick="openCloudinaryUploadForGallery(${i})" class="p-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-all" title="上傳圖片">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
                                     </button>
-                                    <button onclick="removeGalleryItem(${i})" class="p-2 text-zinc-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all">
+                                    <button onclick="removeGalleryItem(${i})" class="p-2 text-zinc-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all" title="刪除">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                                     </button>
                                 </div>
@@ -1167,6 +1176,22 @@
             }
             data.projects[currentEditingProject].gallery.push('');
             editProject(currentEditingProject);
+        }
+
+        function moveGalleryItem(index, direction) {
+            const gallery = data.projects[currentEditingProject].gallery;
+            if (!gallery) return;
+
+            const newIndex = index + direction;
+            if (newIndex < 0 || newIndex >= gallery.length) return;
+
+            // Swap items
+            const temp = gallery[index];
+            gallery[index] = gallery[newIndex];
+            gallery[newIndex] = temp;
+
+            editProject(currentEditingProject);
+            showToast('圖片順序已更新', 'success');
         }
 
         function deleteProject(index) {
