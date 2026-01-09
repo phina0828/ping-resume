@@ -1342,53 +1342,67 @@
             const isSpreadMode = project.flipBookMode === 'spread';
             const totalPages = isSpreadMode ? images.length : Math.ceil(images.length / 2);
 
-            // For spread mode, use object-position to show left/right halves
-            const leftPageStyle = isSpreadMode ? 'object-position: left center; object-fit: cover;' : '';
-            const rightPageStyle = isSpreadMode ? 'object-position: right center; object-fit: cover;' : '';
-
-            return `
-                <div class="fixed inset-0 bg-black/90 flex items-center justify-center p-4">
-                    <button onclick="closePreview()" class="absolute top-6 right-6 p-2 bg-white text-zinc-900 rounded-full hover:bg-red-600 hover:text-white transition-all z-50">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                    </button>
-                    <div class="w-full max-w-5xl">
-                        <div class="perspective-1500 relative">
-                            <div class="flex justify-center items-center gap-0">
-                                <div class="relative w-[45%] aspect-[3/4] bg-white shadow-2xl overflow-hidden">
-                                    <div class="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-black/20 via-black/5 to-transparent z-10"></div>
-                                    ${isSpreadMode ? `
-                                        <div id="flip-left-page" class="w-[200%] h-full" style="margin-left: 0;">
-                                            <img src="${images[0] || ''}" alt="Left Page" class="w-full h-full object-cover object-left">
-                                        </div>
-                                    ` : `
-                                        <img id="flip-left-page" src="${images[0] || ''}" alt="Left Page" class="w-full h-full object-cover">
-                                    `}
-                                </div>
-                                ${isSpreadMode ? '' : '<div class="w-4 h-full bg-gradient-to-r from-zinc-300 via-zinc-200 to-zinc-300 shadow-inner"></div>'}
-                                <div class="relative w-[45%] aspect-[3/4] bg-white shadow-2xl overflow-hidden">
-                                    <div class="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-black/20 via-black/5 to-transparent z-10"></div>
-                                    ${isSpreadMode ? `
-                                        <div id="flip-right-page" class="w-[200%] h-full" style="margin-left: -100%;">
-                                            <img src="${images[0] || ''}" alt="Right Page" class="w-full h-full object-cover object-right">
-                                        </div>
-                                    ` : `
-                                        <img id="flip-right-page" src="${images[1] || ''}" alt="Right Page" class="w-full h-full object-cover">
-                                    `}
+            if (isSpreadMode) {
+                return `
+                    <div class="fixed inset-0 bg-black/90 flex items-center justify-center p-4">
+                        <button onclick="closePreview()" class="absolute top-6 right-6 p-2 bg-white text-zinc-900 rounded-full hover:bg-red-600 hover:text-white transition-all z-50">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                        <div class="w-full max-w-6xl flex flex-col items-center">
+                            <div class="perspective-1500 relative flex justify-center">
+                                <div id="flip-book-container" class="relative bg-white shadow-2xl overflow-hidden" style="max-width: 95%; max-height: 80vh;">
+                                    <div class="absolute left-1/2 top-0 bottom-0 w-px bg-black/10 z-20 -translate-x-1/2"></div>
+                                    <div class="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-black/5 to-transparent z-10 pointer-events-none"></div>
+                                    <div class="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-black/5 to-transparent z-10 pointer-events-none"></div>
+                                    <div class="absolute left-1/2 top-0 bottom-0 w-20 -translate-x-1/2 bg-gradient-to-r from-transparent via-black/10 to-transparent z-10 pointer-events-none"></div>
+                                    <img id="flip-spread-image" src="${images[0] || ''}" alt="Spread" class="w-auto h-auto max-w-full max-h-[80vh] object-contain">
                                 </div>
                             </div>
-                        </div>
-                        <div class="flex justify-center items-center gap-8 mt-8">
-                            <button onclick="flipPrev()" class="p-3 bg-white/10 text-white rounded-full hover:bg-white/20 disabled:opacity-30 transition-all">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-                            </button>
-                            <span id="flip-page-indicator" class="text-white/60 text-sm font-medium">1 / ${totalPages}</span>
-                            <button onclick="flipNext()" class="p-3 bg-white/10 text-white rounded-full hover:bg-white/20 disabled:opacity-30 transition-all">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                            </button>
+                            <div class="flex justify-center items-center gap-8 mt-8">
+                                <button onclick="flipPrev()" class="p-3 bg-white/10 text-white rounded-full hover:bg-white/20 disabled:opacity-30 transition-all">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                                </button>
+                                <span id="flip-page-indicator" class="text-white/60 text-sm font-medium">1 / ${totalPages}</span>
+                                <button onclick="flipNext()" class="p-3 bg-white/10 text-white rounded-full hover:bg-white/20 disabled:opacity-30 transition-all">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            `;
+                `;
+            } else {
+                return `
+                    <div class="fixed inset-0 bg-black/90 flex items-center justify-center p-4">
+                        <button onclick="closePreview()" class="absolute top-6 right-6 p-2 bg-white text-zinc-900 rounded-full hover:bg-red-600 hover:text-white transition-all z-50">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                        <div class="w-full max-w-5xl">
+                            <div class="perspective-1500 relative">
+                                <div class="flex justify-center items-center gap-0">
+                                    <div class="relative w-[45%] aspect-[3/4] bg-white shadow-2xl overflow-hidden">
+                                        <div class="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-black/20 via-black/5 to-transparent z-10"></div>
+                                        <img id="flip-left-page" src="${images[0] || ''}" alt="Left Page" class="w-full h-full object-cover">
+                                    </div>
+                                    <div class="w-4 h-full bg-gradient-to-r from-zinc-300 via-zinc-200 to-zinc-300 shadow-inner"></div>
+                                    <div class="relative w-[45%] aspect-[3/4] bg-white shadow-2xl overflow-hidden">
+                                        <div class="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-black/20 via-black/5 to-transparent z-10"></div>
+                                        <img id="flip-right-page" src="${images[1] || ''}" alt="Right Page" class="w-full h-full object-cover">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex justify-center items-center gap-8 mt-8">
+                                <button onclick="flipPrev()" class="p-3 bg-white/10 text-white rounded-full hover:bg-white/20 disabled:opacity-30 transition-all">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                                </button>
+                                <span id="flip-page-indicator" class="text-white/60 text-sm font-medium">1 / ${totalPages}</span>
+                                <button onclick="flipNext()" class="p-3 bg-white/10 text-white rounded-full hover:bg-white/20 disabled:opacity-30 transition-all">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
         }
 
         let flipCurrentSpread = 0;
@@ -1422,16 +1436,9 @@
             if (flipBookMode === 'spread') {
                 // Spread mode: each image is a full spread
                 const currentImage = flipImages[flipCurrentSpread] || '';
-                const leftPage = document.getElementById('flip-left-page');
-                const rightPage = document.getElementById('flip-right-page');
-
-                if (leftPage) {
-                    const leftImg = leftPage.querySelector('img');
-                    if (leftImg) leftImg.src = currentImage;
-                }
-                if (rightPage) {
-                    const rightImg = rightPage.querySelector('img');
-                    if (rightImg) rightImg.src = currentImage;
+                const spreadImg = document.getElementById('flip-spread-image');
+                if (spreadImg) {
+                    spreadImg.src = currentImage;
                 }
             } else {
                 // Single mode: two images per spread
