@@ -677,7 +677,7 @@
             const embedUrl = getPdfEmbedUrl(project.pdfUrl);
             return `
                 <div class="w-full flex flex-col gap-4">
-                    <div class="flex-1 bg-zinc-100 rounded-sm overflow-hidden border border-zinc-200 shadow-inner relative min-h-[550px]">
+                    <div class="bg-zinc-100 rounded-sm overflow-hidden border border-zinc-200 shadow-inner relative" style="height: 80vh;">
                         <iframe src="${embedUrl}" class="w-full h-full border-none" title="PDF Preview" allow="autoplay"></iframe>
                     </div>
                     <div class="flex items-center justify-between p-4 bg-zinc-50 border border-zinc-100 rounded-sm">
