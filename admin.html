@@ -1369,12 +1369,45 @@
                         </button>
                         <div class="w-full max-w-6xl flex flex-col items-center">
                             <div class="perspective-1500 relative flex justify-center">
-                                <div id="flip-book-container" class="relative bg-white shadow-2xl">
-                                    <div class="absolute left-1/2 top-0 bottom-0 w-px bg-black/10 z-20 -translate-x-1/2"></div>
-                                    <div class="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-black/5 to-transparent z-10 pointer-events-none"></div>
-                                    <div class="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-black/5 to-transparent z-10 pointer-events-none"></div>
-                                    <div class="absolute left-1/2 top-0 bottom-0 w-20 -translate-x-1/2 bg-gradient-to-r from-transparent via-black/10 to-transparent z-10 pointer-events-none"></div>
-                                    <img id="flip-spread-image" src="${images[0] || ''}" alt="Spread" class="block max-w-[90vw] max-h-[80vh]" style="width: auto; height: auto;">
+                                <!-- Book container with 3D effect -->
+                                <div id="flip-book-container" class="relative" style="transform-style: preserve-3d;">
+                                    <!-- Book shadow underneath -->
+                                    <div class="absolute -bottom-4 left-4 right-4 h-8 bg-black/30 blur-xl rounded-full"></div>
+
+                                    <!-- Main book wrapper -->
+                                    <div class="relative bg-white rounded-sm" style="box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5), 0 0 0 1px rgba(0,0,0,0.05);">
+                                        <!-- Book edge (top) -->
+                                        <div class="absolute -top-1 left-2 right-2 h-1 bg-gradient-to-b from-zinc-200 to-zinc-100 rounded-t-sm"></div>
+                                        <!-- Book edge (bottom) -->
+                                        <div class="absolute -bottom-1 left-2 right-2 h-1 bg-gradient-to-t from-zinc-300 to-zinc-200 rounded-b-sm"></div>
+                                        <!-- Book edge (left) -->
+                                        <div class="absolute top-2 -left-1 bottom-2 w-1 bg-gradient-to-r from-zinc-300 to-zinc-100 rounded-l-sm"></div>
+                                        <!-- Book edge (right) -->
+                                        <div class="absolute top-2 -right-1 bottom-2 w-1 bg-gradient-to-l from-zinc-300 to-zinc-100 rounded-r-sm"></div>
+
+                                        <!-- Image container -->
+                                        <div class="relative overflow-hidden">
+                                            <img id="flip-spread-image" src="${images[0] || ''}" alt="Spread" class="block" style="width: auto; height: auto; max-width: min(720px, 70vw); max-height: 56vh;">
+
+                                            <!-- Center spine shadow -->
+                                            <div class="absolute left-1/2 top-0 bottom-0 w-8 -translate-x-1/2 pointer-events-none" style="background: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.15) 45%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.15) 55%, transparent 100%);"></div>
+
+                                            <!-- Center spine line -->
+                                            <div class="absolute left-1/2 top-0 bottom-0 w-px bg-black/20 -translate-x-1/2 pointer-events-none"></div>
+
+                                            <!-- Left page curl shadow -->
+                                            <div class="absolute left-0 top-0 bottom-0 w-16 pointer-events-none" style="background: linear-gradient(to right, rgba(0,0,0,0.08) 0%, transparent 100%);"></div>
+
+                                            <!-- Right page curl shadow -->
+                                            <div class="absolute right-0 top-0 bottom-0 w-16 pointer-events-none" style="background: linear-gradient(to left, rgba(0,0,0,0.08) 0%, transparent 100%);"></div>
+
+                                            <!-- Top page highlight -->
+                                            <div class="absolute top-0 left-0 right-0 h-8 pointer-events-none" style="background: linear-gradient(to bottom, rgba(255,255,255,0.3) 0%, transparent 100%);"></div>
+
+                                            <!-- Page texture overlay -->
+                                            <div class="absolute inset-0 pointer-events-none opacity-[0.02]" style="background-image: url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%224%22 height=%224%22><rect width=%224%22 height=%224%22 fill=%22%23000%22 fill-opacity=%220.03%22/></svg>');"></div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="flex justify-center items-center gap-8 mt-8">
