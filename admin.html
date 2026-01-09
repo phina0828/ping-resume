@@ -1369,12 +1369,12 @@
                         </button>
                         <div class="w-full max-w-6xl flex flex-col items-center">
                             <div class="perspective-1500 relative flex justify-center">
-                                <div id="flip-book-container" class="relative bg-white shadow-2xl overflow-hidden" style="max-width: 95%; max-height: 80vh;">
+                                <div id="flip-book-container" class="relative bg-white shadow-2xl">
                                     <div class="absolute left-1/2 top-0 bottom-0 w-px bg-black/10 z-20 -translate-x-1/2"></div>
                                     <div class="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-black/5 to-transparent z-10 pointer-events-none"></div>
                                     <div class="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-black/5 to-transparent z-10 pointer-events-none"></div>
                                     <div class="absolute left-1/2 top-0 bottom-0 w-20 -translate-x-1/2 bg-gradient-to-r from-transparent via-black/10 to-transparent z-10 pointer-events-none"></div>
-                                    <img id="flip-spread-image" src="${images[0] || ''}" alt="Spread" class="w-auto h-auto max-w-full max-h-[80vh] object-contain">
+                                    <img id="flip-spread-image" src="${images[0] || ''}" alt="Spread" class="block max-w-[90vw] max-h-[80vh]" style="width: auto; height: auto;">
                                 </div>
                             </div>
                             <div class="flex justify-center items-center gap-8 mt-8">
