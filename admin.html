@@ -891,6 +891,12 @@
                         </div>
                     </div>
                     <div class="px-4 pb-4 flex gap-2">
+                        <button onclick="event.stopPropagation(); moveProject(${index}, -1)" class="p-2 text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 rounded-lg transition-all ${index === 0 ? 'opacity-30 cursor-not-allowed' : ''}" ${index === 0 ? 'disabled' : ''} title="上移">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
+                        </button>
+                        <button onclick="event.stopPropagation(); moveProject(${index}, 1)" class="p-2 text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 rounded-lg transition-all ${index === data.projects.length - 1 ? 'opacity-30 cursor-not-allowed' : ''}" ${index === data.projects.length - 1 ? 'disabled' : ''} title="下移">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </button>
                         <button onclick="event.stopPropagation(); openPreview(${index})" class="flex-1 py-2 text-sm text-zinc-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all flex items-center justify-center gap-1">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                             預覽
@@ -1120,6 +1126,19 @@
                 data.projects.splice(index, 1);
                 renderProjects();
             }
+        }
+
+        function moveProject(index, direction) {
+            const newIndex = index + direction;
+            if (newIndex < 0 || newIndex >= data.projects.length) return;
+
+            // Swap projects
+            const temp = data.projects[index];
+            data.projects[index] = data.projects[newIndex];
+            data.projects[newIndex] = temp;
+
+            renderProjects();
+            showToast('作品順序已更新', 'success');
         }
 
         function openProjectModal() {
