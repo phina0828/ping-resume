@@ -714,11 +714,13 @@
         }
 
         function renderVideoViewer(project) {
+            const hasImage = project.image && project.image.trim() !== '';
             return `
                 <div class="w-full flex flex-col gap-4">
                     <div class="flex justify-center">
-                        <a href="${project.videoUrl || ''}" target="_blank" class="block w-full max-w-md aspect-[9/16] bg-zinc-900 rounded-sm overflow-hidden border border-zinc-200 shadow-inner relative group cursor-pointer">
-                            ${project.image ? `<img src="${project.image}" class="w-full h-full object-cover">` : '<div class="w-full h-full bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400"></div>'}
+                        <a href="${project.videoUrl || ''}" target="_blank" class="block w-full max-w-md aspect-[9/16] rounded-sm overflow-hidden border border-zinc-200 shadow-inner relative group cursor-pointer">
+                            <div class="absolute inset-0 bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400"></div>
+                            ${hasImage ? `<img src="${project.image}" class="absolute inset-0 w-full h-full object-cover" onerror="this.style.display='none'">` : ''}
                             <div class="absolute inset-0 bg-black/30 flex items-center justify-center group-hover:bg-black/50 transition-all">
                                 <div class="w-20 h-20 bg-white/90 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
                                     <svg class="w-10 h-10 text-zinc-900 ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>

@@ -1218,6 +1218,7 @@
 
         // Video Viewer
         function renderVideoViewer(project) {
+            const hasImage = project.image && project.image.trim() !== '';
             return `
                 <div class="fixed inset-0 bg-black/95 flex items-center justify-center p-4">
                     <button onclick="closePreview()" class="absolute top-6 right-6 p-2 bg-white text-zinc-900 rounded-full hover:bg-red-600 hover:text-white transition-all z-50">
@@ -1225,8 +1226,9 @@
                     </button>
                     <div class="w-full max-w-md">
                         <div class="bg-white rounded-xl overflow-hidden shadow-2xl">
-                            <a href="${project.videoUrl || ''}" target="_blank" class="block relative aspect-[9/16] bg-zinc-900 group cursor-pointer">
-                                ${project.image ? `<img src="${project.image}" class="w-full h-full object-cover">` : ''}
+                            <a href="${project.videoUrl || ''}" target="_blank" class="block relative aspect-[9/16] group cursor-pointer">
+                                <div class="absolute inset-0 bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400"></div>
+                                ${hasImage ? `<img src="${project.image}" class="absolute inset-0 w-full h-full object-cover" onerror="this.style.display='none'">` : ''}
                                 <div class="absolute inset-0 bg-black/30 flex items-center justify-center group-hover:bg-black/50 transition-all">
                                     <div class="w-20 h-20 bg-white/90 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
                                         <svg class="w-10 h-10 text-zinc-900 ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
