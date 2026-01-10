@@ -213,7 +213,7 @@
                     <span class="text-[10px] uppercase font-black text-red-500 mb-4 block" id="modal-category">Project Detail</span>
                     <h2 class="text-5xl font-black mb-6 tracking-tighter leading-none" id="modal-title">Project Title</h2>
                     <p class="text-xl text-zinc-500 mb-10 font-medium" id="modal-subtitle">Subtitle</p>
-                    <div class="border-t border-zinc-100 pt-8 space-y-6">
+                    <div id="modal-scope-container" class="border-t border-zinc-100 pt-8 space-y-6">
                         <div>
                             <h4 class="font-black mb-3 uppercase text-[10px] tracking-widest text-red-600" id="modal-scope-title">Project Scope</h4>
                             <p class="text-zinc-600 text-sm leading-relaxed" id="modal-desc">
@@ -843,31 +843,21 @@
             document.getElementById('modal-title').textContent = project.title;
             document.getElementById('modal-subtitle').textContent = project.subtitle;
 
-            // Set scope title
-            document.getElementById('modal-scope-title').textContent = project.scopeTitle || 'Project Scope';
+            // Set scope title and description
+            const scopeContainer = document.getElementById('modal-scope-container');
+            const scopeTitle = project.scopeTitle || '';
+            const scopeDesc = project.scopeDesc || '';
 
-            // Set description - use custom if provided, otherwise auto-generate
-            const displayMode = project.displayMode || 'stack';
-            let desc = project.scopeDesc || '';
-            if (!desc) {
-                switch (displayMode) {
-                    case 'pdf':
-                        desc = '完整 PDF 文件預覽模式，可直接滾動閱讀。';
-                        break;
-                    case 'instagram':
-                        desc = '社群風格輪播展示，模擬 Instagram 貼文體驗。';
-                        break;
-                    case 'flipbook':
-                        desc = '3D 翻書互動模式，模擬實體雜誌翻頁效果。';
-                        break;
-                    case 'video':
-                        desc = 'Instagram 影片展示，嵌入式播放體驗。';
-                        break;
-                    default:
-                        desc = '純淨並排展示，完整呈現設計細節與排版比例。';
-                }
+            // Hide scope container if both title and description are empty
+            if (!scopeTitle.trim() && !scopeDesc.trim()) {
+                scopeContainer.classList.add('hidden');
+            } else {
+                scopeContainer.classList.remove('hidden');
+                document.getElementById('modal-scope-title').textContent = scopeTitle || 'Project Scope';
+                document.getElementById('modal-desc').textContent = scopeDesc;
             }
-            document.getElementById('modal-desc').textContent = desc;
+
+            const displayMode = project.displayMode || 'stack';
 
             // Render content based on displayMode
             const contentContainer = document.getElementById('modal-content');
