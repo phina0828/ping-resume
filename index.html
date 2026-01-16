@@ -629,6 +629,26 @@
                             </div>
                             <p class="text-sm"><span class="font-semibold">${profile?.nameEn || 'designer'}</span> ${project.title || ''}</p>
                         </div>
+                        ${images.length > 1 ? `
+                        <div class="px-3 pb-3 border-t border-zinc-100 pt-3">
+                            <p class="text-[10px] text-zinc-400 uppercase tracking-wider font-medium mb-2">全部 ${images.length} 張</p>
+                            <div class="relative flex items-center gap-2">
+                                <button onclick="scrollIgThumbnailsLeft()" class="flex-shrink-0 w-8 h-8 bg-zinc-100 hover:bg-zinc-200 rounded-full flex items-center justify-center transition-all text-zinc-500 hover:text-zinc-700">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                                </button>
+                                <div class="flex gap-2 overflow-x-auto no-scrollbar flex-1 py-1 px-1" id="ig-thumbnails">
+                                    ${images.map((img, i) => `
+                                        <button onclick="igGoTo(${i})" class="ig-thumb flex-shrink-0 w-14 h-14 rounded-lg overflow-hidden transition-all ${i === 0 ? 'ring-2 ring-red-500 ring-offset-1' : 'opacity-60 hover:opacity-100'}">
+                                            <img src="${img}" alt="Thumbnail ${i + 1}" class="w-full h-full object-cover">
+                                        </button>
+                                    `).join('')}
+                                </div>
+                                <button onclick="scrollIgThumbnailsRight()" class="flex-shrink-0 w-8 h-8 bg-zinc-100 hover:bg-zinc-200 rounded-full flex items-center justify-center transition-all text-zinc-500 hover:text-zinc-700">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                        ` : ''}
                     </div>
                 </div>
             `;
@@ -660,6 +680,28 @@
                     dot.className = 'ig-dot rounded-full transition-all w-1.5 h-1.5 bg-white/60 hover:bg-white';
                 }
             });
+            // Update thumbnails
+            document.querySelectorAll('.ig-thumb').forEach((thumb, i) => {
+                if (i === igCurrentIndex) {
+                    thumb.className = 'ig-thumb flex-shrink-0 w-14 h-14 rounded-lg overflow-hidden transition-all ring-2 ring-red-500 ring-offset-1';
+                } else {
+                    thumb.className = 'ig-thumb flex-shrink-0 w-14 h-14 rounded-lg overflow-hidden transition-all opacity-60 hover:opacity-100';
+                }
+            });
+        }
+
+        function scrollIgThumbnailsLeft() {
+            const container = document.getElementById('ig-thumbnails');
+            if (container) {
+                container.scrollBy({ left: -150, behavior: 'smooth' });
+            }
+        }
+
+        function scrollIgThumbnailsRight() {
+            const container = document.getElementById('ig-thumbnails');
+            if (container) {
+                container.scrollBy({ left: 150, behavior: 'smooth' });
+            }
         }
 
         // ============ FlipBook Viewer ============
