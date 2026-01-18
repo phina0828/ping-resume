@@ -235,9 +235,9 @@
                     <div id="modal-scope-container" class="border-t border-zinc-100 pt-4 md:pt-8 space-y-4 md:space-y-6">
                         <div>
                             <h4 class="font-black mb-2 md:mb-3 uppercase text-[10px] tracking-widest text-red-600" id="modal-scope-title">Project Scope</h4>
-                            <p class="text-zinc-600 text-sm leading-relaxed" id="modal-desc">
+                            <div class="text-zinc-600 text-sm leading-relaxed" id="modal-desc">
                                 此專案致力於在保持品牌核心精神的同時，優化其在多元載體上的視覺表現。
-                            </p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -942,7 +942,20 @@
             } else {
                 scopeContainer.classList.remove('hidden');
                 document.getElementById('modal-scope-title').textContent = scopeTitle || 'Project Scope';
-                document.getElementById('modal-desc').textContent = scopeDesc;
+                // Format description: split by ｜ and create styled sections
+                const formattedDesc = scopeDesc.split('｜').map(section => {
+                    const trimmed = section.trim();
+                    if (!trimmed) return '';
+                    // Check if section has a title (ends with colon or has specific pattern)
+                    const colonIndex = trimmed.indexOf('：');
+                    if (colonIndex > 0 && colonIndex < 15) {
+                        const title = trimmed.substring(0, colonIndex);
+                        const content = trimmed.substring(colonIndex + 1).trim();
+                        return `<div class="mb-4 last:mb-0"><span class="font-bold text-zinc-800">${title}</span><span class="text-zinc-500">：</span><span class="text-zinc-600">${content}</span></div>`;
+                    }
+                    return `<div class="mb-4 last:mb-0">${trimmed}</div>`;
+                }).join('');
+                document.getElementById('modal-desc').innerHTML = formattedDesc;
             }
 
             const displayMode = project.displayMode || 'stack';
