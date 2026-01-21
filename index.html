@@ -243,6 +243,13 @@
                             </div>
                         </div>
                     </div>
+                    <!-- Back to top button -->
+                    <div id="modal-back-to-top" class="hidden mt-12">
+                        <button onclick="document.getElementById('project-modal').scrollTo({top: 0, behavior: 'smooth'})" class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-zinc-500 hover:text-zinc-700 border border-zinc-200 rounded-full hover:border-zinc-400 transition-all">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
+                            回到最上面
+                        </button>
+                    </div>
                 </div>
                 <!-- Right side - Scrollable -->
                 <div class="w-[700px] flex-shrink-0 relative pt-16 pb-16 bg-white min-h-full" id="modal-content-wrapper">
@@ -1188,12 +1195,18 @@
 
             contentContainer.innerHTML = content;
 
-            // Show/hide scroll indicator based on display mode
+            // Show/hide scroll indicator and back to top button based on display mode
             const scrollIndicator = document.getElementById('modal-scroll-indicator');
+            const backToTop = document.getElementById('modal-back-to-top');
             if (scrollIndicator) {
                 const showIndicator = displayMode === 'stack';
                 scrollIndicator.classList.toggle('flex', showIndicator);
                 scrollIndicator.classList.toggle('hidden', !showIndicator);
+            }
+            if (backToTop) {
+                const showBackToTop = displayMode === 'stack';
+                backToTop.classList.toggle('block', showBackToTop);
+                backToTop.classList.toggle('hidden', !showBackToTop);
             }
 
             const modal = document.getElementById('project-modal');
