@@ -241,14 +241,18 @@
                             </div>
                         </div>
                     </div>
-                    <!-- Scroll indicator on left side -->
-                    <div id="modal-scroll-indicator" class="hidden lg:flex flex-col items-center gap-2 text-zinc-400 animate-bounce mt-12">
-                        <span class="text-[10px] font-medium uppercase tracking-widest">Scroll</span>
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
-                    </div>
                 </div>
                 <!-- Right side - Scrollable -->
-                <div class="flex-1 overflow-y-auto" id="modal-content">
+                <div class="flex-1 overflow-y-auto relative" id="modal-content-wrapper">
+                    <div id="modal-content"></div>
+                    <!-- Scroll indicator floating at bottom center -->
+                    <div id="modal-scroll-indicator" class="hidden sticky bottom-8 left-0 right-0 z-20 pointer-events-none">
+                        <div class="flex flex-col items-center gap-2 bg-black/70 text-white px-6 py-4 rounded-full animate-bounce backdrop-blur-sm w-fit mx-auto">
+                            <span class="text-sm font-medium uppercase tracking-widest">Scroll</span>
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+                        </div>
+                    </div>
+                </div>
                     <div class="w-full aspect-[4/5] bg-zinc-50 overflow-hidden ring-1 ring-zinc-100">
                         <img id="modal-image" src="" class="w-full h-full object-cover" alt="Detail" />
                     </div>
@@ -1003,7 +1007,7 @@
             const scrollIndicator = document.getElementById('modal-scroll-indicator');
             if (scrollIndicator) {
                 const showIndicator = displayMode === 'stack' && (project.gallery || []).length > 1;
-                scrollIndicator.classList.toggle('lg:flex', showIndicator);
+                scrollIndicator.classList.toggle('flex', showIndicator);
                 scrollIndicator.classList.toggle('hidden', !showIndicator);
             }
 
