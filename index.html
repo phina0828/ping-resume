@@ -571,7 +571,16 @@
         function renderStackViewer(project) {
             const images = project.gallery || [];
             return `
-                <div class="w-full space-y-12 py-4">
+                <div class="w-full space-y-12 py-4 relative">
+                    <!-- Scroll indicator -->
+                    ${images.length > 1 ? `
+                    <div class="sticky top-0 left-0 right-0 flex justify-center pointer-events-none z-10 -mt-4 pb-8">
+                        <div class="flex flex-col items-center gap-2 text-zinc-400 animate-bounce">
+                            <span class="text-[10px] font-medium uppercase tracking-widest">Scroll</span>
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+                        </div>
+                    </div>
+                    ` : ''}
                     ${images.map((img, idx) => `
                         <div class="group rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:scale-[1.01]">
                             <img src="${img}" alt="Work ${idx + 1}" class="w-full h-auto">

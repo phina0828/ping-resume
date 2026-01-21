@@ -1369,6 +1369,13 @@
                     <button onclick="closePreview()" class="fixed top-6 right-6 p-2 bg-red-600 text-white rounded-full hover:bg-red-700 transition-all z-50 shadow-lg">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                     </button>
+                    <!-- Scroll indicator -->
+                    ${images.length > 1 ? `
+                    <div class="fixed top-20 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-zinc-400 animate-bounce pointer-events-none z-40">
+                        <span class="text-[10px] font-medium uppercase tracking-widest">Scroll</span>
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+                    </div>
+                    ` : ''}
                     <div class="max-w-4xl mx-auto py-20 px-6">
                         <h2 class="text-3xl font-black text-zinc-900 mb-12 text-center">${project.title || ''}</h2>
                         <div class="space-y-12">
