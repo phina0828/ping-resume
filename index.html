@@ -1191,7 +1191,7 @@
             // Show/hide scroll indicator based on display mode
             const scrollIndicator = document.getElementById('modal-scroll-indicator');
             if (scrollIndicator) {
-                const showIndicator = displayMode === 'stack' && (project.gallery || []).length > 1;
+                const showIndicator = displayMode === 'stack';
                 scrollIndicator.classList.toggle('flex', showIndicator);
                 scrollIndicator.classList.toggle('hidden', !showIndicator);
             }
