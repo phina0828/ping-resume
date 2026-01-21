@@ -684,6 +684,15 @@
             document.querySelectorAll('.ig-thumb').forEach((thumb, i) => {
                 if (i === igCurrentIndex) {
                     thumb.className = 'ig-thumb flex-shrink-0 w-14 h-14 rounded-lg overflow-hidden transition-all ring-2 ring-red-500 ring-offset-1';
+                    // Scroll to keep active thumbnail visible
+                    const container = document.getElementById('ig-thumbnails');
+                    if (container && thumb) {
+                        const containerRect = container.getBoundingClientRect();
+                        const thumbRect = thumb.getBoundingClientRect();
+                        if (thumbRect.left < containerRect.left || thumbRect.right > containerRect.right) {
+                            thumb.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+                        }
+                    }
                 } else {
                     thumb.className = 'ig-thumb flex-shrink-0 w-14 h-14 rounded-lg overflow-hidden transition-all opacity-60 hover:opacity-100';
                 }
