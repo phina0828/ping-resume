@@ -775,6 +775,10 @@
                     `).join('')}
                     <div class="py-20 text-center">
                         <p class="text-[10px] font-black uppercase tracking-[0.5em] text-zinc-300">End of Gallery</p>
+                        <button onclick="document.getElementById('project-modal').scrollTo({top: 0, behavior: 'smooth'})" class="lg:hidden mt-8 inline-flex flex-col items-center gap-2 bg-black/70 text-white px-6 py-4 rounded-full backdrop-blur-sm cursor-pointer hover:bg-black/90 transition-colors">
+                            <svg class="w-5 h-5 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+                            <span class="text-xs font-medium uppercase tracking-widest">Top</span>
+                        </button>
                     </div>
                 </div>
             `;
