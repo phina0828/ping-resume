@@ -229,7 +229,9 @@
             </button>
             <div class="flex flex-col lg:flex-row min-h-full">
                 <!-- Left side - Fixed -->
-                <div class="w-[400px] flex-shrink-0 p-8 border-r border-zinc-100 bg-white min-h-full">
+                <div class="w-[400px] flex-shrink-0 p-8 border-r border-zinc-100 bg-white min-h-full relative">
+                    <!-- Right edge shadow -->
+                    <div class="absolute right-0 top-0 bottom-0 w-4 pointer-events-none" style="background: linear-gradient(to left, rgba(0,0,0,0.08) 0%, transparent 100%);"></div>
                     <span class="text-[10px] uppercase font-black text-red-500 mb-2 md:mb-4 block" id="modal-category">Project Detail</span>
                     <h2 class="text-xl md:text-[2.1rem] font-black mb-3 md:mb-6 tracking-tighter leading-snug" id="modal-title">Project Title</h2>
                     <p class="text-base md:text-xl text-zinc-500 mb-6 md:mb-10 font-medium" id="modal-subtitle">Subtitle</p>
@@ -765,9 +767,7 @@
         function renderStackViewer(project) {
             const images = project.gallery || [];
             return `
-                <div class="w-full relative">
-                    <!-- Left shadow overlay -->
-                    <div class="absolute left-0 top-0 bottom-0 w-16 pointer-events-none z-10" style="background: linear-gradient(to right, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.05) 50%, transparent 100%);"></div>
+                <div class="w-full">
                     ${images.map((img, idx) => `
                         <div class="group overflow-hidden">
                             <img src="${img}" alt="Work ${idx + 1}" class="w-full h-auto block">
