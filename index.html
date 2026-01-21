@@ -222,13 +222,14 @@
     </section>
 
     <!-- Project Modal -->
-    <div id="project-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-2 md:p-4 bg-white/98 backdrop-blur-xl">
-        <div class="w-full max-w-6xl max-h-[95vh] overflow-y-auto relative no-scrollbar bg-white p-4 md:p-12 shadow-2xl rounded-sm border border-zinc-100">
+    <div id="project-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-white/98 backdrop-blur-xl">
+        <div class="w-full h-full max-w-6xl mx-auto relative bg-white shadow-2xl border-x border-zinc-100">
             <button onclick="closeModal()" class="absolute top-3 right-3 md:fixed md:top-8 md:right-8 z-50 p-2 bg-red-600 text-white rounded-full hover:scale-110 transition-all shadow-lg">
                 <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
-            <div class="grid lg:grid-cols-12 gap-6 md:gap-12 pt-8 md:pt-0">
-                <div class="lg:col-span-4">
+            <div class="flex flex-col lg:flex-row h-full">
+                <!-- Left side - Fixed -->
+                <div class="lg:w-[320px] xl:w-[380px] flex-shrink-0 p-4 md:p-8 lg:p-12 lg:h-full lg:overflow-y-auto border-b lg:border-b-0 lg:border-r border-zinc-100">
                     <span class="text-[10px] uppercase font-black text-red-500 mb-2 md:mb-4 block" id="modal-category">Project Detail</span>
                     <h2 class="text-xl md:text-[2.1rem] font-black mb-3 md:mb-6 tracking-tighter leading-snug" id="modal-title">Project Title</h2>
                     <p class="text-base md:text-xl text-zinc-500 mb-6 md:mb-10 font-medium" id="modal-subtitle">Subtitle</p>
@@ -240,9 +241,15 @@
                             </div>
                         </div>
                     </div>
+                    <!-- Scroll indicator on left side -->
+                    <div id="modal-scroll-indicator" class="hidden lg:flex flex-col items-center gap-2 text-zinc-400 animate-bounce mt-12">
+                        <span class="text-[10px] font-medium uppercase tracking-widest">Scroll</span>
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+                    </div>
                 </div>
-                <div class="lg:col-span-8 flex items-center justify-center min-h-[300px] md:min-h-[550px]" id="modal-content">
-                    <div class="w-full aspect-[4/5] bg-zinc-50 rounded-sm overflow-hidden ring-1 ring-zinc-100 shadow-2xl">
+                <!-- Right side - Scrollable -->
+                <div class="flex-1 overflow-y-auto" id="modal-content">
+                    <div class="w-full aspect-[4/5] bg-zinc-50 overflow-hidden ring-1 ring-zinc-100">
                         <img id="modal-image" src="" class="w-full h-full object-cover" alt="Detail" />
                     </div>
                 </div>
@@ -571,16 +578,7 @@
         function renderStackViewer(project) {
             const images = project.gallery || [];
             return `
-                <div class="w-full py-4 relative">
-                    <!-- Scroll indicator -->
-                    ${images.length > 1 ? `
-                    <div class="sticky top-0 left-0 right-0 flex justify-center pointer-events-none z-10 -mt-4 pb-8">
-                        <div class="flex flex-col items-center gap-2 text-zinc-400 animate-bounce">
-                            <span class="text-[10px] font-medium uppercase tracking-widest">Scroll</span>
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
-                        </div>
-                    </div>
-                    ` : ''}
+                <div class="w-full">
                     ${images.map((img, idx) => `
                         <div class="group overflow-hidden">
                             <img src="${img}" alt="Work ${idx + 1}" class="w-full h-auto block">
@@ -1000,6 +998,14 @@
             }
 
             contentContainer.innerHTML = content;
+
+            // Show/hide scroll indicator based on display mode
+            const scrollIndicator = document.getElementById('modal-scroll-indicator');
+            if (scrollIndicator) {
+                const showIndicator = displayMode === 'stack' && (project.gallery || []).length > 1;
+                scrollIndicator.classList.toggle('lg:flex', showIndicator);
+                scrollIndicator.classList.toggle('hidden', !showIndicator);
+            }
 
             const modal = document.getElementById('project-modal');
             modal.classList.remove('hidden');
