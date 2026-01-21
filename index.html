@@ -804,7 +804,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="relative ${aspectClass} bg-zinc-100">
+                        <div id="ig-image-container" class="relative ${aspectClass} bg-zinc-100">
                             <img id="ig-current-image" src="${images[0] || ''}" alt="Slide" class="w-full h-full object-cover">
                             ${images.length > 1 ? `
                                 <button onclick="igPrev()" class="absolute left-2 top-1/2 -translate-y-1/2 p-1.5 bg-white/90 rounded-full shadow-lg hover:bg-white">
@@ -910,6 +910,39 @@
             const container = document.getElementById('ig-thumbnails');
             if (container) {
                 container.scrollBy({ left: 150, behavior: 'smooth' });
+            }
+        }
+
+        // ============ Instagram Swipe Handler ============
+        let igTouchStartX = 0;
+        let igTouchEndX = 0;
+
+        function initIgSwipe() {
+            const container = document.getElementById('ig-image-container');
+            if (!container) return;
+
+            container.addEventListener('touchstart', (e) => {
+                igTouchStartX = e.changedTouches[0].screenX;
+            }, { passive: true });
+
+            container.addEventListener('touchend', (e) => {
+                igTouchEndX = e.changedTouches[0].screenX;
+                handleIgSwipe();
+            }, { passive: true });
+        }
+
+        function handleIgSwipe() {
+            const swipeThreshold = 50;
+            const diff = igTouchStartX - igTouchEndX;
+
+            if (Math.abs(diff) > swipeThreshold) {
+                if (diff > 0) {
+                    // Swipe left -> next
+                    igNext();
+                } else {
+                    // Swipe right -> prev
+                    igPrev();
+                }
             }
         }
 
@@ -1191,6 +1224,11 @@
             }
 
             contentContainer.innerHTML = content;
+
+            // Initialize swipe for Instagram mode
+            if (displayMode === 'instagram') {
+                initIgSwipe();
+            }
 
             // Show/hide scroll indicator based on display mode
             const scrollIndicator = document.getElementById('modal-scroll-indicator');
