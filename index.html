@@ -223,15 +223,15 @@
 
     <!-- Project Modal -->
     <div id="project-modal" class="fixed inset-0 z-50 hidden bg-white/98 backdrop-blur-xl overflow-auto">
-        <div class="w-[1100px] min-h-full mx-auto relative bg-white shadow-2xl border-x border-zinc-100">
+        <div class="w-full lg:w-[1100px] min-h-full mx-auto relative bg-white shadow-2xl lg:border-x border-zinc-100">
             <button onclick="closeModal()" class="fixed top-4 right-4 md:top-8 md:right-8 z-50 p-2 bg-red-600 text-white rounded-full hover:scale-110 transition-all shadow-lg">
                 <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
             <div class="flex flex-col lg:flex-row min-h-full">
                 <!-- Left side - Fixed -->
-                <div class="w-[400px] flex-shrink-0 p-8 border-r border-zinc-100 bg-white min-h-full relative">
-                    <!-- Right edge shadow -->
-                    <div class="absolute right-0 top-0 bottom-0 w-4 pointer-events-none" style="background: linear-gradient(to left, rgba(0,0,0,0.08) 0%, transparent 100%);"></div>
+                <div class="w-full lg:w-[400px] flex-shrink-0 p-4 md:p-8 border-b lg:border-b-0 lg:border-r border-zinc-100 bg-white lg:min-h-full relative">
+                    <!-- Right edge shadow (desktop only) -->
+                    <div class="hidden lg:block absolute right-0 top-0 bottom-0 w-4 pointer-events-none" style="background: linear-gradient(to left, rgba(0,0,0,0.08) 0%, transparent 100%);"></div>
                     <span class="text-[10px] uppercase font-black text-red-500 mb-2 md:mb-4 block" id="modal-category">Project Detail</span>
                     <h2 class="text-xl md:text-[2.1rem] font-black mb-3 md:mb-6 tracking-tighter leading-snug" id="modal-title">Project Title</h2>
                     <p class="text-base md:text-xl text-zinc-500 mb-6 md:mb-10 font-medium" id="modal-subtitle">Subtitle</p>
@@ -245,7 +245,7 @@
                     </div>
                 </div>
                 <!-- Right side - Scrollable -->
-                <div class="w-[700px] flex-shrink-0 relative pt-16 pb-16 bg-white min-h-full" id="modal-content-wrapper">
+                <div class="w-full lg:w-[700px] flex-shrink-0 relative pt-4 lg:pt-16 pb-16 bg-white lg:min-h-full" id="modal-content-wrapper">
                     <div id="modal-content"></div>
                     <!-- Scroll indicator floating at bottom center -->
                     <div id="modal-scroll-indicator" class="hidden sticky bottom-8 left-0 right-0 z-20">
@@ -942,7 +942,7 @@
 
                                     <!-- Image container -->
                                     <div id="flip-image-container" class="relative overflow-hidden">
-                                        <img id="flip-spread-image" src="${images[0] || ''}" alt="Spread" class="block flip-book-image" style="width: 640px; height: auto;">
+                                        <img id="flip-spread-image" src="${images[0] || ''}" alt="Spread" class="block flip-book-image" style="max-width: 640px; width: 100%; height: auto;">
 
                                         <!-- Center spine shadow -->
                                         <div class="absolute left-1/2 top-0 bottom-0 w-8 -translate-x-1/2 pointer-events-none" style="background: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.15) 45%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.15) 55%, transparent 100%); z-index: 10;"></div>
