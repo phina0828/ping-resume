@@ -765,7 +765,9 @@
         function renderStackViewer(project) {
             const images = project.gallery || [];
             return `
-                <div class="w-full">
+                <div class="w-full relative">
+                    <!-- Left shadow overlay -->
+                    <div class="absolute left-0 top-0 bottom-0 w-16 pointer-events-none z-10" style="background: linear-gradient(to right, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.05) 50%, transparent 100%);"></div>
                     ${images.map((img, idx) => `
                         <div class="group overflow-hidden">
                             <img src="${img}" alt="Work ${idx + 1}" class="w-full h-auto block">
