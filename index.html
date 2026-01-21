@@ -246,8 +246,8 @@
                 <div class="w-[700px] flex-shrink-0 relative pt-16 pb-16 bg-white min-h-full" id="modal-content-wrapper">
                     <div id="modal-content"></div>
                     <!-- Scroll indicator floating at bottom center -->
-                    <div id="modal-scroll-indicator" class="hidden sticky bottom-8 left-0 right-0 z-20 pointer-events-none">
-                        <div class="flex flex-col items-center gap-2 bg-black/70 text-white px-6 py-4 rounded-full animate-bounce backdrop-blur-sm w-fit mx-auto">
+                    <div id="modal-scroll-indicator" class="hidden sticky bottom-8 left-0 right-0 z-20">
+                        <div onclick="document.getElementById('project-modal').scrollBy({top: 400, behavior: 'smooth'})" class="flex flex-col items-center gap-2 bg-black/70 text-white px-6 py-4 rounded-full animate-bounce backdrop-blur-sm w-fit mx-auto cursor-pointer hover:bg-black/90 transition-colors">
                             <span class="text-sm font-medium uppercase tracking-widest">Scroll</span>
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
                         </div>
