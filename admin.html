@@ -1378,10 +1378,10 @@
                     ` : ''}
                     <div class="max-w-4xl mx-auto py-20 px-6">
                         <h2 class="text-3xl font-black text-zinc-900 mb-12 text-center">${project.title || ''}</h2>
-                        <div class="space-y-12">
+                        <div>
                             ${images.map((img, idx) => `
-                                <div class="group rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:scale-[1.01]">
-                                    <img src="${img}" alt="Work ${idx + 1}" class="w-full h-auto">
+                                <div class="group overflow-hidden">
+                                    <img src="${img}" alt="Work ${idx + 1}" class="w-full h-auto block">
                                 </div>
                             `).join('')}
                         </div>
