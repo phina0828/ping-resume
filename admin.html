@@ -554,7 +554,10 @@
             }, (error, result) => {
                 if (!error && result && result.event === 'success') {
                     const url = result.info.secure_url;
-                    document.getElementById(inputId).value = url;
+                    const input = document.getElementById(inputId);
+                    input.value = url;
+                    // Trigger input event to save data
+                    input.dispatchEvent(new Event('input', { bubbles: true }));
                     if (callback) callback();
                     showToast('圖片上傳成功！', 'success');
                 }
