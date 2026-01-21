@@ -222,14 +222,14 @@
     </section>
 
     <!-- Project Modal -->
-    <div id="project-modal" class="fixed inset-0 z-50 hidden bg-white/98 backdrop-blur-xl overflow-x-auto overflow-y-hidden">
-        <div class="w-[1100px] h-full mx-auto relative bg-white shadow-2xl border-x border-zinc-100">
+    <div id="project-modal" class="fixed inset-0 z-50 hidden bg-white/98 backdrop-blur-xl overflow-auto">
+        <div class="w-[1100px] min-h-full mx-auto relative bg-white shadow-2xl border-x border-zinc-100">
             <button onclick="closeModal()" class="fixed top-4 right-4 md:top-8 md:right-8 z-50 p-2 bg-red-600 text-white rounded-full hover:scale-110 transition-all shadow-lg">
                 <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
-            <div class="flex flex-col lg:flex-row h-full">
+            <div class="flex flex-col lg:flex-row min-h-full">
                 <!-- Left side - Fixed -->
-                <div class="w-[400px] flex-shrink-0 p-8 h-full overflow-y-auto border-r border-zinc-100">
+                <div class="w-[400px] flex-shrink-0 p-8 border-r border-zinc-100">
                     <span class="text-[10px] uppercase font-black text-red-500 mb-2 md:mb-4 block" id="modal-category">Project Detail</span>
                     <h2 class="text-xl md:text-[2.1rem] font-black mb-3 md:mb-6 tracking-tighter leading-snug" id="modal-title">Project Title</h2>
                     <p class="text-base md:text-xl text-zinc-500 mb-6 md:mb-10 font-medium" id="modal-subtitle">Subtitle</p>
@@ -243,7 +243,7 @@
                     </div>
                 </div>
                 <!-- Right side - Scrollable -->
-                <div class="w-[700px] flex-shrink-0 overflow-y-auto relative pt-16" id="modal-content-wrapper">
+                <div class="w-[700px] flex-shrink-0 relative pt-16 pb-16" id="modal-content-wrapper">
                     <div id="modal-content"></div>
                     <!-- Scroll indicator floating at bottom center -->
                     <div id="modal-scroll-indicator" class="hidden sticky bottom-8 left-0 right-0 z-20 pointer-events-none">
