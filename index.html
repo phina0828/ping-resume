@@ -243,9 +243,9 @@
                             </div>
                         </div>
                     </div>
-                    <!-- Back to top button -->
-                    <div id="modal-back-to-top" class="hidden mt-12">
-                        <button onclick="document.getElementById('project-modal').scrollTo({top: 0, behavior: 'smooth'})" class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-zinc-500 hover:text-zinc-700 border border-zinc-200 rounded-full hover:border-zinc-400 transition-all">
+                    <!-- Back to top button - fixed at bottom left -->
+                    <div id="modal-back-to-top" class="hidden fixed bottom-8 left-8 z-50">
+                        <button onclick="document.getElementById('project-modal').scrollTo({top: 0, behavior: 'smooth'})" class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-black/70 hover:bg-black/90 rounded-full backdrop-blur-sm transition-all shadow-lg">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
                             回到最上面
                         </button>
