@@ -243,12 +243,14 @@
                             </div>
                         </div>
                     </div>
-                    <!-- Back to top button - fixed at bottom left -->
-                    <div id="modal-back-to-top" class="hidden fixed bottom-8 left-8 z-50">
-                        <button onclick="document.getElementById('project-modal').scrollTo({top: 0, behavior: 'smooth'})" class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-black/70 hover:bg-black/90 rounded-full backdrop-blur-sm transition-all shadow-lg">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
-                            回到最上面
-                        </button>
+                    <!-- Back to top button - sticky at bottom of left panel -->
+                    <div id="modal-back-to-top" class="hidden sticky bottom-8 left-0 right-0 z-20 mt-8">
+                        <div class="flex justify-center">
+                            <button onclick="document.getElementById('project-modal').scrollTo({top: 0, behavior: 'smooth'})" class="flex items-center gap-2 px-6 py-4 text-sm font-medium text-white bg-black/70 hover:bg-black/90 rounded-full backdrop-blur-sm transition-all shadow-lg cursor-pointer">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
+                                回到最上面
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <!-- Right side - Scrollable -->
