@@ -344,6 +344,9 @@
     <div id="preview-modal" class="fixed inset-0 z-[60] hidden"></div>
 
     <script>
+        // Data version - must match index.html DATA_VERSION
+        const DATA_VERSION = 2;
+
         // ============ 預設資料 ============
         const DEFAULT_DATA = {
             profile: {
@@ -642,7 +645,18 @@
 
         // ============ Data Management ============
         function loadData() {
+            const savedVersion = localStorage.getItem('portfolio_data_version');
             const saved = localStorage.getItem('portfolio_data');
+
+            // If version mismatch, reset to DEFAULT_DATA
+            if (!savedVersion || parseInt(savedVersion) < DATA_VERSION) {
+                data = JSON.parse(JSON.stringify(DEFAULT_DATA));
+                localStorage.setItem('portfolio_data', JSON.stringify(data));
+                localStorage.setItem('portfolio_data_version', DATA_VERSION.toString());
+                renderAll();
+                return;
+            }
+
             if (saved) {
                 try {
                     data = JSON.parse(saved);
@@ -663,6 +677,7 @@
 
         function saveAllData() {
             localStorage.setItem('portfolio_data', JSON.stringify(data));
+            localStorage.setItem('portfolio_data_version', DATA_VERSION.toString());
             showToast('資料已儲存！', 'success');
         }
 

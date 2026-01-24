@@ -335,6 +335,9 @@
             if (e.key === 'Escape') closeAdminLogin();
         });
 
+        // Data version - increment this when DEFAULT_DATA changes to force sync across all devices
+        const DATA_VERSION = 2;
+
         // Default Data (fallback if no localStorage data)
         const DEFAULT_DATA = {
             profile: {
@@ -606,7 +609,16 @@
 
         // Load data from localStorage or use defaults
         function loadPortfolioData() {
+            const savedVersion = localStorage.getItem('portfolio_data_version');
             const saved = localStorage.getItem('portfolio_data');
+
+            // If version mismatch or no version, use DEFAULT_DATA and update localStorage
+            if (!savedVersion || parseInt(savedVersion) < DATA_VERSION) {
+                localStorage.setItem('portfolio_data', JSON.stringify(DEFAULT_DATA));
+                localStorage.setItem('portfolio_data_version', DATA_VERSION.toString());
+                return DEFAULT_DATA;
+            }
+
             if (saved) {
                 try {
                     return JSON.parse(saved);
