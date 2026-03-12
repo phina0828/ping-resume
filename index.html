@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>王郁平 | 視覺設計師作品集</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- PDF.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; }
@@ -33,6 +38,29 @@
     </style>
 </head>
 <body class="min-h-screen bg-[#FDFDFD] text-zinc-900 selection:bg-red-500 selection:text-white antialiased">
+
+    <!-- Maintenance Mode Overlay -->
+    <div id="maintenance-overlay" class="fixed inset-0 z-[9999] bg-zinc-900 flex items-center justify-center hidden">
+        <div class="text-center px-6 max-w-lg">
+            <div class="mb-8">
+                <svg class="w-24 h-24 mx-auto text-amber-500 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-black text-white mb-4 tracking-tight">
+                網站維護中
+            </h1>
+            <p class="text-zinc-400 text-lg mb-8">
+                我們正在進行系統更新，請稍後再訪問。<br>
+                感謝您的耐心等待！
+            </p>
+            <div class="flex items-center justify-center gap-2 text-zinc-500 text-sm">
+                <div class="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></div>
+                <span>Site Under Maintenance</span>
+            </div>
+        </div>
+    </div>
 
     <!-- Navbar -->
     <nav class="fixed w-full z-40 bg-white/70 backdrop-blur-xl border-b border-zinc-100 px-6">
@@ -224,9 +252,14 @@
     <!-- Project Modal -->
     <div id="project-modal" class="fixed inset-0 z-50 hidden bg-white/98 backdrop-blur-xl overflow-auto">
         <div class="w-full lg:w-[1100px] min-h-full mx-auto relative bg-white shadow-2xl lg:border-x border-zinc-100">
-            <button onclick="closeModal()" class="fixed top-4 right-4 md:top-8 md:right-8 z-50 p-2 bg-red-600 text-white rounded-full hover:scale-110 transition-all shadow-lg">
-                <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-            </button>
+            <div class="fixed top-4 right-4 md:top-8 md:right-8 z-50 flex items-center gap-2">
+                <button onclick="copyShareLink()" id="share-btn" class="p-2 bg-zinc-800 text-white rounded-full hover:scale-110 transition-all shadow-lg" title="複製連結">
+                    <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
+                </button>
+                <button onclick="closeModal()" class="p-2 bg-red-600 text-white rounded-full hover:scale-110 transition-all shadow-lg" title="關閉">
+                    <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
             <div class="flex flex-col lg:flex-row min-h-full">
                 <!-- Left side - Fixed -->
                 <div class="w-full lg:w-[400px] flex-shrink-0 p-4 md:p-8 border-b lg:border-b-0 lg:border-r border-zinc-100 bg-white lg:min-h-full relative">
@@ -334,6 +367,22 @@
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') closeAdminLogin();
         });
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCwGMsr0XFgpjUTZvZtOqQQWgtXVJtCDEg",
+            authDomain: "ping-portfolio.firebaseapp.com",
+            databaseURL: "https://ping-portfolio-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "ping-portfolio",
+            storageBucket: "ping-portfolio.firebasestorage.app",
+            messagingSenderId: "164010058407",
+            appId: "1:164010058407:web:e007654c1051a464903182",
+            measurementId: "G-ZS3LMV1T5H"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
 
         // Data version - increment this when DEFAULT_DATA changes to force sync across all devices
         const DATA_VERSION = 2;
@@ -607,37 +656,47 @@
             ]
         };
 
-        // Load data from localStorage or use defaults
-        function loadPortfolioData() {
-            const savedVersion = localStorage.getItem('portfolio_data_version');
-            const saved = localStorage.getItem('portfolio_data');
+        // Load data from Firebase or use defaults
+        async function loadPortfolioData() {
+            try {
+                const snapshot = await database.ref('portfolio').once('value');
+                const firebaseData = snapshot.val();
 
-            // If version mismatch or no version, use DEFAULT_DATA and update localStorage
-            if (!savedVersion || parseInt(savedVersion) < DATA_VERSION) {
-                localStorage.setItem('portfolio_data', JSON.stringify(DEFAULT_DATA));
-                localStorage.setItem('portfolio_data_version', DATA_VERSION.toString());
+                if (firebaseData && firebaseData.data) {
+                    console.log('Data loaded from Firebase');
+                    return firebaseData.data;
+                } else {
+                    console.log('No Firebase data, using default');
+                    return DEFAULT_DATA;
+                }
+            } catch (error) {
+                console.error('Firebase load error:', error);
+                // Fallback to localStorage
+                const saved = localStorage.getItem('portfolio_data');
+                if (saved) {
+                    try {
+                        return JSON.parse(saved);
+                    } catch (e) {
+                        console.error('Failed to parse saved data:', e);
+                    }
+                }
                 return DEFAULT_DATA;
             }
-
-            if (saved) {
-                try {
-                    return JSON.parse(saved);
-                } catch (e) {
-                    console.error('Failed to parse saved data:', e);
-                }
-            }
-            return DEFAULT_DATA;
         }
 
-        const portfolioData = loadPortfolioData();
-        const profile = portfolioData.profile;
-        const experience = portfolioData.experience;
-        const education = portfolioData.education;
-        const skills = portfolioData.skills;
-        const softwareTools = portfolioData.softwareTools || [];
-        const projects = portfolioData.projects;
+        // These will be initialized after data loads
+        let portfolioData = DEFAULT_DATA;
+        let profile = portfolioData.profile;
+        let experience = portfolioData.experience;
+        let education = portfolioData.education;
+        let skills = portfolioData.skills;
+        let softwareTools = portfolioData.softwareTools || [];
+        let projects = portfolioData.projects;
+        let savedCategories = portfolioData.categories || [];
 
-        const categories = ['全部', ...new Set(projects.map(p => p.category))];
+        // Use saved category order, filter to only categories that have projects
+        let projectCategories = new Set(projects.map(p => p.category).filter(c => c));
+        let categories = ['全部', ...savedCategories.filter(c => projectCategories.has(c))];
         let activeCategory = '全部';
 
         // Render Timeline Item
@@ -785,6 +844,29 @@
                             <img src="${img}" alt="Work ${idx + 1}" class="w-full h-auto block">
                         </div>
                     `).join('')}
+                    <div class="py-20 text-center">
+                        <p class="text-[10px] font-black uppercase tracking-[0.5em] text-zinc-300">End of Gallery</p>
+                        <button onclick="document.getElementById('project-modal').scrollTo({top: 0, behavior: 'smooth'})" class="lg:hidden mt-8 inline-flex flex-col items-center gap-2 bg-black/70 text-white px-6 py-4 rounded-full backdrop-blur-sm cursor-pointer hover:bg-black/90 transition-colors">
+                            <svg class="w-5 h-5 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+                            <span class="text-xs font-medium uppercase tracking-widest">Top</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ============ Stack Gap Viewer (with spacing) ============
+        function renderStackGapViewer(project) {
+            const images = project.gallery || [];
+            return `
+                <div class="w-full max-w-4xl mx-auto px-4 py-8">
+                    <div class="flex flex-col gap-6">
+                        ${images.map((img, idx) => `
+                            <div class="group overflow-hidden rounded-lg shadow-lg">
+                                <img src="${img}" alt="Work ${idx + 1}" class="w-full h-auto block">
+                            </div>
+                        `).join('')}
+                    </div>
                     <div class="py-20 text-center">
                         <p class="text-[10px] font-black uppercase tracking-[0.5em] text-zinc-300">End of Gallery</p>
                         <button onclick="document.getElementById('project-modal').scrollTo({top: 0, behavior: 'smooth'})" class="lg:hidden mt-8 inline-flex flex-col items-center gap-2 bg-black/70 text-white px-6 py-4 rounded-full backdrop-blur-sm cursor-pointer hover:bg-black/90 transition-colors">
@@ -1092,7 +1174,26 @@
             document.getElementById('flip-page-indicator').textContent = `${flipCurrentSpread + 1} / ${totalSpreads}`;
         }
 
-        // ============ PDF Viewer ============
+        // ============ PDF Viewer (PDF.js) ============
+        let pdfDoc = null;
+        let pdfCurrentPage = 1;
+        let pdfTotalPages = 0;
+        let pdfScale = 1.5;
+        let pdfRendering = false;
+        let pdfPageNumPending = null;
+
+        function getPdfDirectUrl(url) {
+            if (!url) return '';
+            // Google Drive: convert to direct download URL
+            if (url.includes('drive.google.com')) {
+                const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+                if (match) {
+                    return `https://drive.google.com/uc?export=download&id=${match[1]}`;
+                }
+            }
+            return url;
+        }
+
         function getPdfEmbedUrl(url) {
             if (!url) return '';
             // Google Drive: convert to preview URL
@@ -1106,21 +1207,87 @@
             return `https://docs.google.com/viewer?url=${encodeURIComponent(url)}&embedded=true`;
         }
 
+        function isGoogleDriveUrl(url) {
+            return url && url.includes('drive.google.com');
+        }
+
         function renderPdfViewer(project) {
+            const viewerId = 'pdf-viewer-' + Date.now();
+            const isGDrive = isGoogleDriveUrl(project.pdfUrl);
             const embedUrl = getPdfEmbedUrl(project.pdfUrl);
+
+            // For Google Drive, use iframe directly (PDF.js can't load due to CORS)
+            // For other URLs (like Cloudinary), try PDF.js first
+            if (!isGDrive) {
+                setTimeout(() => initPdfJs(project.pdfUrl, viewerId), 100);
+            }
+
             return `
                 <div class="w-full flex flex-col gap-4">
-                    <div class="bg-zinc-100 rounded-sm overflow-hidden border border-zinc-200 shadow-inner relative" style="height: 80vh;">
-                        <iframe src="${embedUrl}" class="w-full h-full border-none" title="PDF Preview" allow="autoplay"></iframe>
+                    <!-- PDF Controls -->
+                    <div id="${viewerId}-controls" class="flex items-center justify-between p-3 bg-zinc-800 text-white rounded-t-lg ${isGDrive ? 'hidden' : ''}">
+                        <div class="flex items-center gap-2">
+                            <button onclick="pdfPrevPage('${viewerId}')" class="p-2 hover:bg-zinc-700 rounded transition-colors" title="上一頁">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                            </button>
+                            <span class="text-sm">
+                                <span id="${viewerId}-page-num">1</span> / <span id="${viewerId}-page-count">-</span>
+                            </span>
+                            <button onclick="pdfNextPage('${viewerId}')" class="p-2 hover:bg-zinc-700 rounded transition-colors" title="下一頁">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            </button>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="pdfZoomOut('${viewerId}')" class="p-2 hover:bg-zinc-700 rounded transition-colors" title="縮小">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/></svg>
+                            </button>
+                            <span id="${viewerId}-zoom" class="text-sm min-w-[50px] text-center">150%</span>
+                            <button onclick="pdfZoomIn('${viewerId}')" class="p-2 hover:bg-zinc-700 rounded transition-colors" title="放大">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                            </button>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <a href="${project.pdfUrl || ''}" target="_blank" class="p-2 hover:bg-zinc-700 rounded transition-colors" title="開新視窗">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                            </a>
+                            <a href="${project.pdfUrl || ''}" download class="p-2 hover:bg-zinc-700 rounded transition-colors" title="下載">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                            </a>
+                        </div>
                     </div>
+                    <!-- PDF Canvas Container (for PDF.js) -->
+                    <div id="${viewerId}-container" class="bg-zinc-200 ${isGDrive ? 'hidden' : ''} rounded-b-lg overflow-auto relative" style="height: 75vh;">
+                        <!-- Loading indicator -->
+                        <div id="${viewerId}-loader" class="absolute inset-0 flex flex-col items-center justify-center bg-zinc-100 z-10">
+                            <div class="w-12 h-12 border-4 border-zinc-300 border-t-red-500 rounded-full animate-spin mb-4"></div>
+                            <p id="${viewerId}-loader-text" class="text-zinc-500 text-sm">PDF 載入中...</p>
+                        </div>
+                        <div id="${viewerId}-pages" class="flex flex-col items-center gap-4 p-4"></div>
+                    </div>
+                    <!-- Iframe fallback (for Google Drive or when PDF.js fails) -->
+                    <div id="${viewerId}-iframe-container" class="bg-zinc-100 rounded-lg overflow-hidden border border-zinc-200 shadow-inner relative ${isGDrive ? '' : 'hidden'}" style="height: 80vh;">
+                        <div id="${viewerId}-iframe-loader" class="absolute inset-0 flex flex-col items-center justify-center bg-zinc-100 z-10">
+                            <div class="w-12 h-12 border-4 border-zinc-300 border-t-red-500 rounded-full animate-spin mb-4"></div>
+                            <p class="text-zinc-500 text-sm">PDF 載入中...</p>
+                        </div>
+                        <iframe
+                            id="${viewerId}-iframe"
+                            src="${embedUrl}"
+                            class="w-full h-full border-none opacity-0 transition-opacity duration-300"
+                            title="PDF Preview"
+                            allow="autoplay"
+                            onload="document.getElementById('${viewerId}-iframe').classList.remove('opacity-0'); document.getElementById('${viewerId}-iframe-loader').style.display='none';"
+                        ></iframe>
+                    </div>
+                    <!-- Bottom bar with links -->
                     <div class="flex items-center justify-between p-4 bg-zinc-50 border border-zinc-100 rounded-sm">
                         <div class="flex items-center gap-3">
                             <div class="p-2 bg-red-100 text-red-600 rounded-sm animate-breathe">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                             </div>
                             <div>
-                                <p class="text-xs font-black uppercase text-zinc-900">Interactive Mode</p>
-                                <p class="text-[10px] text-zinc-400">您可以直接在視窗中滾動閱讀完整內容</p>
+                                <p class="text-xs font-black uppercase text-zinc-900">${isGDrive ? 'Google Drive' : 'PDF Viewer'}</p>
+                                <p class="text-[10px] text-zinc-400">${isGDrive ? '使用 Google Drive 預覽' : '使用 PDF.js 快速瀏覽'}</p>
                             </div>
                         </div>
                         <div class="flex items-center gap-2">
@@ -1138,6 +1305,172 @@
             `;
         }
 
+        // PDF.js viewer state per viewer
+        const pdfViewers = {};
+
+        async function initPdfJs(pdfUrl, viewerId) {
+            if (!pdfUrl) return;
+
+            // Set PDF.js worker
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+            // Initialize viewer state
+            pdfViewers[viewerId] = {
+                doc: null,
+                currentPage: 1,
+                totalPages: 0,
+                scale: 1, // Will be calculated to fit width
+                baseScale: 1, // Original scale for reference
+                rendering: false,
+                pendingPage: null
+            };
+
+            const directUrl = getPdfDirectUrl(pdfUrl);
+            const loaderText = document.getElementById(`${viewerId}-loader-text`);
+
+            try {
+                loaderText.textContent = 'PDF 載入中...';
+
+                // Load the PDF
+                const loadingTask = pdfjsLib.getDocument({
+                    url: directUrl,
+                    cMapUrl: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/cmaps/',
+                    cMapPacked: true,
+                });
+
+                loadingTask.onProgress = (progress) => {
+                    if (progress.total > 0) {
+                        const percent = Math.round((progress.loaded / progress.total) * 100);
+                        loaderText.textContent = `PDF 載入中... ${percent}%`;
+                    }
+                };
+
+                const pdf = await loadingTask.promise;
+                pdfViewers[viewerId].doc = pdf;
+                pdfViewers[viewerId].totalPages = pdf.numPages;
+
+                // Update page count
+                document.getElementById(`${viewerId}-page-count`).textContent = pdf.numPages;
+
+                // Hide loader
+                document.getElementById(`${viewerId}-loader`).style.display = 'none';
+
+                // Render all pages (initial render calculates fit-to-width scale)
+                await renderAllPdfPages(viewerId, true);
+
+            } catch (error) {
+                console.error('PDF load error:', error);
+                // Fallback to iframe
+                fallbackToIframe(viewerId, pdfUrl);
+            }
+        }
+
+        function fallbackToIframe(viewerId, pdfUrl) {
+            // Hide PDF.js container and controls
+            document.getElementById(`${viewerId}-container`).classList.add('hidden');
+            document.getElementById(`${viewerId}-controls`).classList.add('hidden');
+
+            // Show iframe container
+            const iframeContainer = document.getElementById(`${viewerId}-iframe-container`);
+            iframeContainer.classList.remove('hidden');
+
+            // Set iframe src if not already set
+            const iframe = document.getElementById(`${viewerId}-iframe`);
+            if (!iframe.src || iframe.src === 'about:blank') {
+                iframe.src = getPdfEmbedUrl(pdfUrl);
+            }
+        }
+
+        async function renderAllPdfPages(viewerId, isInitialRender = false) {
+            const viewer = pdfViewers[viewerId];
+            if (!viewer || !viewer.doc) return;
+
+            const pagesContainer = document.getElementById(`${viewerId}-pages`);
+            const containerEl = document.getElementById(`${viewerId}-container`);
+            pagesContainer.innerHTML = '';
+
+            // Calculate scale to fit width on first render only
+            if (isInitialRender || viewer.baseScale === 1) {
+                const firstPage = await viewer.doc.getPage(1);
+                const defaultViewport = firstPage.getViewport({ scale: 1 });
+                const containerWidth = containerEl.clientWidth - 48; // Account for padding
+                viewer.baseScale = containerWidth / defaultViewport.width;
+                viewer.scale = viewer.baseScale;
+                // Update zoom display
+                document.getElementById(`${viewerId}-zoom`).textContent = Math.round(viewer.scale * 100) + '%';
+            }
+
+            for (let pageNum = 1; pageNum <= viewer.totalPages; pageNum++) {
+                const page = await viewer.doc.getPage(pageNum);
+                const viewport = page.getViewport({ scale: viewer.scale });
+
+                // Create canvas for this page
+                const canvas = document.createElement('canvas');
+                canvas.className = 'shadow-lg bg-white';
+                canvas.width = viewport.width;
+                canvas.height = viewport.height;
+                canvas.id = `${viewerId}-page-${pageNum}`;
+
+                pagesContainer.appendChild(canvas);
+
+                const context = canvas.getContext('2d');
+                await page.render({
+                    canvasContext: context,
+                    viewport: viewport
+                }).promise;
+
+                // Update progress
+                document.getElementById(`${viewerId}-page-num`).textContent = pageNum;
+            }
+
+            // Reset to page 1 display
+            document.getElementById(`${viewerId}-page-num`).textContent = '1';
+            viewer.currentPage = 1;
+        }
+
+        function pdfPrevPage(viewerId) {
+            const viewer = pdfViewers[viewerId];
+            if (!viewer || viewer.currentPage <= 1) return;
+
+            viewer.currentPage--;
+            document.getElementById(`${viewerId}-page-num`).textContent = viewer.currentPage;
+            scrollToPdfPage(viewerId, viewer.currentPage);
+        }
+
+        function pdfNextPage(viewerId) {
+            const viewer = pdfViewers[viewerId];
+            if (!viewer || viewer.currentPage >= viewer.totalPages) return;
+
+            viewer.currentPage++;
+            document.getElementById(`${viewerId}-page-num`).textContent = viewer.currentPage;
+            scrollToPdfPage(viewerId, viewer.currentPage);
+        }
+
+        function scrollToPdfPage(viewerId, pageNum) {
+            const pageCanvas = document.getElementById(`${viewerId}-page-${pageNum}`);
+            if (pageCanvas) {
+                pageCanvas.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        async function pdfZoomIn(viewerId) {
+            const viewer = pdfViewers[viewerId];
+            if (!viewer || viewer.scale >= 3) return;
+
+            viewer.scale += 0.25;
+            document.getElementById(`${viewerId}-zoom`).textContent = Math.round(viewer.scale * 100) + '%';
+            await renderAllPdfPages(viewerId);
+        }
+
+        async function pdfZoomOut(viewerId) {
+            const viewer = pdfViewers[viewerId];
+            if (!viewer || viewer.scale <= 0.5) return;
+
+            viewer.scale -= 0.25;
+            document.getElementById(`${viewerId}-zoom`).textContent = Math.round(viewer.scale * 100) + '%';
+            await renderAllPdfPages(viewerId);
+        }
+
         function getInstagramEmbedUrl(url) {
             if (!url) return '';
             let embedUrl = url.split('?')[0];
@@ -1146,40 +1479,73 @@
             return embedUrl;
         }
 
+        function getYoutubeId(url) {
+            if (!url) return '';
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : '';
+        }
+
         function renderVideoViewer(project) {
             const hasImage = project.image && project.image.trim() !== '';
-            return `
-                <div class="w-full flex flex-col gap-4">
-                    <div class="flex justify-center">
-                        <a href="${project.videoUrl || ''}" target="_blank" class="block w-full max-w-md aspect-[9/16] rounded-sm overflow-hidden border border-zinc-200 shadow-inner relative group cursor-pointer">
-                            <div class="absolute inset-0 bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400"></div>
-                            ${hasImage ? `<img src="${project.image}" class="absolute inset-0 w-full h-full object-cover" onerror="this.style.display='none'">` : ''}
-                            <div class="absolute inset-0 bg-black/30 flex items-center justify-center group-hover:bg-black/50 transition-all">
-                                <div class="w-20 h-20 bg-white/90 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
-                                    <svg class="w-10 h-10 text-zinc-900 ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                                </div>
-                            </div>
-                            <div class="absolute bottom-4 left-4 right-4 flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-600 p-0.5">
-                                    <div class="w-full h-full bg-white rounded-full flex items-center justify-center">
-                                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="18" cy="6" r="1.5" fill="currentColor"/></svg>
+            const isYoutube = project.videoType === 'youtube' && project.youtubeUrl;
+            const youtubeId = isYoutube ? getYoutubeId(project.youtubeUrl) : '';
+
+            if (isYoutube && youtubeId) {
+                // YouTube embed viewer
+                return `
+                    <div class="w-full flex flex-col gap-4">
+                        <div class="w-full aspect-video rounded-sm overflow-hidden border border-zinc-200 shadow-inner">
+                            <iframe src="https://www.youtube.com/embed/${youtubeId}" class="w-full h-full" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        </div>
+                        <div class="flex justify-center">
+                            <a href="${project.youtubeUrl}" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 transition-all">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                                在 YouTube 開啟
+                            </a>
+                        </div>
+                    </div>
+                `;
+            } else {
+                // Instagram link viewer
+                return `
+                    <div class="w-full flex flex-col gap-4">
+                        <div class="flex justify-center">
+                            <a href="${project.videoUrl || ''}" target="_blank" class="block w-full max-w-md aspect-[9/16] rounded-sm overflow-hidden border border-zinc-200 shadow-inner relative group cursor-pointer">
+                                <div class="absolute inset-0 bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400"></div>
+                                ${hasImage ? `<img src="${project.image}" class="absolute inset-0 w-full h-full object-cover" onerror="this.style.display='none'">` : ''}
+                                <div class="absolute inset-0 bg-black/30 flex items-center justify-center group-hover:bg-black/50 transition-all">
+                                    <div class="w-20 h-20 bg-white/90 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
+                                        <svg class="w-10 h-10 text-zinc-900 ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                                     </div>
                                 </div>
-                                <div class="flex-1 text-white">
-                                    <p class="text-sm font-bold drop-shadow-lg">${project.title || '影片'}</p>
-                                    <p class="text-xs opacity-80 drop-shadow-lg">點擊觀看 Instagram 影片</p>
+                                <div class="absolute bottom-4 left-4 right-4 flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-600 p-0.5">
+                                        <div class="w-full h-full bg-white rounded-full flex items-center justify-center">
+                                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="18" cy="6" r="1.5" fill="currentColor"/></svg>
+                                        </div>
+                                    </div>
+                                    <div class="flex-1 text-white">
+                                        <p class="text-sm font-bold drop-shadow-lg">${project.title || '影片'}</p>
+                                        <p class="text-xs opacity-80 drop-shadow-lg">點擊觀看 Instagram 影片</p>
+                                    </div>
                                 </div>
-                            </div>
-                        </a>
+                            </a>
+                        </div>
                     </div>
-                </div>
-            `;
+                `;
+            }
         }
 
         // ============ Modal Functions ============
-        function openModal(projectId) {
+        function openModal(projectId, updateHash = true) {
             const project = projects.find(p => p.id === projectId);
             if (!project) return;
+
+            // Update URL hash for sharing
+            if (updateHash) {
+                window.history.pushState(null, '', `#project-${projectId}`);
+            }
 
             document.getElementById('modal-category').textContent = `Project Detail / ${project.category}`;
             document.getElementById('modal-title').textContent = project.title;
@@ -1231,6 +1597,9 @@
                 case 'video':
                     content = renderVideoViewer(project);
                     break;
+                case 'stack-gap':
+                    content = renderStackGapViewer(project);
+                    break;
                 default:
                     content = renderStackViewer(project);
             }
@@ -1245,7 +1614,7 @@
             // Show/hide scroll indicator based on display mode
             const scrollIndicator = document.getElementById('modal-scroll-indicator');
             if (scrollIndicator) {
-                const showIndicator = displayMode === 'stack';
+                const showIndicator = displayMode === 'stack' || displayMode === 'stack-gap';
                 scrollIndicator.classList.toggle('flex', showIndicator);
                 scrollIndicator.classList.toggle('hidden', !showIndicator);
             }
@@ -1261,6 +1630,31 @@
             modal.classList.add('hidden');
             modal.classList.remove('flex');
             document.body.style.overflow = '';
+            // Clear URL hash
+            if (window.location.hash) {
+                window.history.pushState(null, '', window.location.pathname);
+            }
+        }
+
+        function copyShareLink() {
+            const url = window.location.href;
+            navigator.clipboard.writeText(url).then(() => {
+                // Show success feedback
+                const btn = document.getElementById('share-btn');
+                const originalHTML = btn.innerHTML;
+                btn.innerHTML = '<svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>';
+                btn.classList.remove('bg-zinc-800');
+                btn.classList.add('bg-green-600');
+                setTimeout(() => {
+                    btn.innerHTML = originalHTML;
+                    btn.classList.remove('bg-green-600');
+                    btn.classList.add('bg-zinc-800');
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy:', err);
+                // Fallback: show alert with URL
+                prompt('複製此連結分享作品：', url);
+            });
         }
 
         // Close modal on backdrop click
@@ -1318,9 +1712,41 @@
             if (contactEmailLinkEl) contactEmailLinkEl.href = 'mailto:' + (profile.email || 'phinainaina@gmail.com');
         }
 
+        // Check maintenance mode
+        async function checkMaintenanceMode() {
+            try {
+                const snapshot = await database.ref('siteSettings/maintenanceMode').once('value');
+                return snapshot.val() === true;
+            } catch (error) {
+                console.error('Check maintenance mode error:', error);
+                return false;
+            }
+        }
+
         // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
-            // Render Profile from localStorage
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Check maintenance mode first
+            const isMaintenanceMode = await checkMaintenanceMode();
+            if (isMaintenanceMode) {
+                document.getElementById('maintenance-overlay').classList.remove('hidden');
+                return; // Stop loading the rest of the page
+            }
+
+            // Load data from Firebase
+            portfolioData = await loadPortfolioData();
+            profile = portfolioData.profile;
+            experience = portfolioData.experience;
+            education = portfolioData.education;
+            skills = portfolioData.skills;
+            softwareTools = portfolioData.softwareTools || [];
+            projects = portfolioData.projects;
+            savedCategories = portfolioData.categories || [];
+
+            // Use saved category order, filter to only categories that have projects
+            projectCategories = new Set(projects.map(p => p.category).filter(c => c));
+            categories = ['全部', ...savedCategories.filter(c => projectCategories.has(c))];
+
+            // Render Profile
             renderProfile();
 
             // Render Experience Timeline
@@ -1342,7 +1768,33 @@
             // Render Filters and Projects
             renderFilters();
             renderProjects();
+
+            // Check URL hash and open project if specified
+            checkUrlHashAndOpenProject();
         });
+
+        // Handle browser back/forward buttons
+        window.addEventListener('popstate', function() {
+            checkUrlHashAndOpenProject();
+        });
+
+        function checkUrlHashAndOpenProject() {
+            const hash = window.location.hash;
+            if (hash && hash.startsWith('#project-')) {
+                const projectId = parseInt(hash.replace('#project-', ''));
+                if (!isNaN(projectId) && projects.find(p => p.id === projectId)) {
+                    openModal(projectId, false); // Don't update hash again
+                }
+            } else {
+                // Close modal if no hash
+                const modal = document.getElementById('project-modal');
+                if (!modal.classList.contains('hidden')) {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                    document.body.style.overflow = '';
+                }
+            }
+        }
     </script>
 
 </body>
